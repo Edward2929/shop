@@ -222,11 +222,40 @@
                     ></span>
                 </div>
             </div>
+            <div v-if="supportedCurrencies.length > 0" class="form-group row">
+                <label class="col-sm-12 control-label text-left">
+                    {{ trans("product::products.group.fixed_prices") }}
+                </label>
+
+                <div class="col-sm-12">
+                    <div
+                        v-for="currency in supportedCurrencies"
+                        :key="currency"
+                        class="input-group"
+                        style="margin-bottom: 6px;"
+                    >
+                        <span class="input-group-addon" style="min-width: 60px;">
+                            {{ currency }}
+                        </span>
+
+                        <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            class="form-control"
+                            :name="`fixed_prices[${currency}]`"
+                            @wheel="$event.target.blur()"
+                            v-model="form.fixed_prices[currency]"
+                        />
+                    </div>
+                </div>
+            </div>
         </template>
     </div>
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { useForm } from "../composables/useForm";
 import { useConfigs } from "../composables/useConfigs";
 import { useVariants } from "../composables/useVariants";
@@ -237,4 +266,10 @@ const { form, errors } = useForm();
 const { hasAnyVariant } = useVariants();
 const { flatPickrConfig } = useConfigs();
 const { removeDatePickerValue } = useProductMethods();
+
+const supportedCurrencies = computed(() => FleetCart.supportedCurrencies || []);
+
+if (!form.fixed_prices) {
+    form.fixed_prices = {};
+}
 </script>

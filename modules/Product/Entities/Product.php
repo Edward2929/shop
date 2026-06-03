@@ -65,6 +65,7 @@ class Product extends Model implements Sitemapable
         'special_price_start',
         'special_price_end',
         'selling_price',
+        'fixed_prices',
         'manage_stock',
         'qty',
         'in_stock',
@@ -80,6 +81,7 @@ class Product extends Model implements Sitemapable
      * @var array
      */
     protected $casts = [
+        'fixed_prices' => 'array',
         'is_virtual' => 'boolean',
         'is_active' => 'boolean',
         'special_price_start' => 'datetime',

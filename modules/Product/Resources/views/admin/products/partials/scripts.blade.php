@@ -137,6 +137,9 @@
         FleetCart.langs['product::products.downloads.add_file'] = '{{ trans('product::products.downloads.add_file') }}';
         FleetCart.langs['product::products.group.media'] = '{{ trans('product::products.group.media') }}';
         FleetCart.langs['product::products.group.pricing'] = '{{ trans('product::products.group.pricing') }}';
+        FleetCart.langs['product::products.group.fixed_prices'] = '{{ trans('product::products.group.fixed_prices') }}';
+        FleetCart.langs['product::attributes.fixed_price_for'] = '{{ trans('product::attributes.fixed_price_for') }}';
+        FleetCart.supportedCurrencies = @json(array_filter((array) setting('supported_currencies'), fn($c) => $c !== setting('default_currency')));
         FleetCart.langs['product::products.variants.has_product_variant'] = '{{ trans('product::products.variants.has_product_variant') }}';
         FleetCart.langs['product::attributes.price'] = '{{ trans('product::attributes.price') }}';
         FleetCart.langs['product::attributes.special_price'] = '{{ trans('product::attributes.special_price') }}';

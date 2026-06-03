@@ -325,6 +325,7 @@ export function useVariants() {
             manage_stock: 0,
             qty: null,
             in_stock: 1,
+            fixed_prices: {},
         };
     }
 

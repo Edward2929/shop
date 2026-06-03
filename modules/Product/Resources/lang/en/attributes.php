@@ -12,6 +12,7 @@ return [
     'is_virtual' => 'Virtual',
     'is_active' => 'Status',
     'price' => 'Price',
+    'fixed_price_for' => 'Fixed price for :currency',
     'special_price' => 'Special Price',
     'special_price_type' => 'Special Price Type',
     'special_price_start' => 'Special Price Start',

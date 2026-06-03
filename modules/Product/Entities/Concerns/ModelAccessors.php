@@ -3,6 +3,7 @@
 namespace Modules\Product\Entities\Concerns;
 
 use Modules\Support\Money;
+use Modules\Support\ProductMoney;
 use Modules\Media\Entities\File;
 use Modules\FlashSale\Entities\FlashSale;
 use Illuminate\Database\Eloquent\Collection;
@@ -33,6 +34,13 @@ trait ModelAccessors
 
     public function getPriceAttribute($price): Money
     {
+        $fixedPrices = $this->attributes['fixed_prices'] ?? null;
+        $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
+
+        if (!empty($fixedPricesArray)) {
+            return ProductMoney::inDefaultCurrencyWithFixed($price, $fixedPricesArray);
+        }
+
         return Money::inDefaultCurrency($price);
     }
 
@@ -117,6 +125,13 @@ trait ModelAccessors
     {
         if (FlashSale::contains($this)) {
             $sellingPrice = FlashSale::pivot($this)->price->amount();
+        }
+
+        $fixedPrices = $this->attributes['fixed_prices'] ?? null;
+        $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
+
+        if (!empty($fixedPricesArray) && !FlashSale::contains($this)) {
+            return ProductMoney::inDefaultCurrencyWithFixed($sellingPrice, $fixedPricesArray);
         }
 
         return Money::inDefaultCurrency($sellingPrice);

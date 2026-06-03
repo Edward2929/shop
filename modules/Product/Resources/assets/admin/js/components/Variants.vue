@@ -701,6 +701,39 @@
                                                     </div>
                                                 </div>
 
+                                                <div class="row" v-if="supportedCurrencies && supportedCurrencies.length > 0">
+                                                    <div class="col-sm-12">
+                                                        <div class="form-group row">
+                                                            <label class="col-sm-12 control-label text-left">
+                                                                {{ trans("product::products.group.fixed_prices") }}
+                                                            </label>
+
+                                                            <div class="col-sm-12">
+                                                                <div
+                                                                    v-for="currency in supportedCurrencies"
+                                                                    :key="currency"
+                                                                    class="input-group"
+                                                                    style="margin-bottom: 6px;"
+                                                                >
+                                                                    <span class="input-group-addon" style="min-width: 60px;">
+                                                                        {{ currency }}
+                                                                    </span>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        step="0.01"
+                                                                        class="form-control"
+                                                                        :name="`variants.${variant.uid}.fixed_prices[${currency}]`"
+                                                                        @wheel="$event.target.blur()"
+                                                                        v-model="variant.fixed_prices[currency]"
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
                                                 <div class="row">
                                                     <div class="col-sm-6">
                                                         <div
@@ -915,6 +948,8 @@ const {
     resetDefaultVariant,
 } = useVariants();
 const { toggleAccordions, toggleAccordion } = useProductMethods();
+
+const supportedCurrencies = computed(() => FleetCart.supportedCurrencies || []);
 
 const isCollapsedVariantsAccordion = computed(() =>
     form.variants.every(({ is_open }) => is_open === false),

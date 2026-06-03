@@ -36,6 +36,7 @@ class ProductVariant extends Model
         'special_price_start',
         'special_price_end',
         'selling_price',
+        'fixed_prices',
         'manage_stock',
         'qty',
         'in_stock',
@@ -49,6 +50,7 @@ class ProductVariant extends Model
      * @var array
      */
     protected $casts = [
+        'fixed_prices' => 'array',
         'is_active' => 'boolean',
         'is_default' => 'boolean',
         'special_price_start' => 'datetime',

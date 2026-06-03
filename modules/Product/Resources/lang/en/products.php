@@ -28,6 +28,7 @@ return [
         'variants' => 'Variants',
         'options' => 'Options',
         'pricing' => 'Pricing',
+        'fixed_prices' => 'Fixed Prices (Per Currency)',
         'inventory' => 'Inventory',
         'media' => 'Media',
         'linked_products' => 'Linked Products',

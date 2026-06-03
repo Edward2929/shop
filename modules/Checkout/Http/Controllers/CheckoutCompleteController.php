@@ -178,8 +178,12 @@ class CheckoutCompleteController
     {
         $order = session('placed_order');
 
-        return $order
-            ? view('storefront::public.checkout.complete.show', compact('order'))
-            : redirect()->route('home');
+        if (!$order) {
+            return redirect()->route('home');
+        }
+
+        $order->load(['products', 'taxes', 'coupon']);
+
+        return view('storefront::public.checkout.complete.show', compact('order'));
     }
 }

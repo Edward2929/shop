@@ -7,5 +7,7 @@
         {{ Form::checkbox('reviews_enabled', trans('setting::attributes.reviews_enabled'), trans('setting::settings.form.allow_reviews'), $errors, $settings) }}
         {{ Form::checkbox('auto_approve_reviews', trans('setting::attributes.auto_approve_reviews'), trans('setting::settings.form.approve_reviews_automatically'), $errors, $settings) }}
         {{ Form::checkbox('cookie_bar_enabled', trans('setting::attributes.cookie_bar_enabled'), trans('setting::settings.form.show_cookie_bar'), $errors, $settings) }}
+        {{ Form::number('store_vat_rate', trans('setting::attributes.store_vat_rate'), $errors, $settings, ['min' => 0, 'max' => 100, 'step' => '0.01']) }}
+        {{ Form::checkbox('prices_include_vat', trans('setting::attributes.prices_include_vat'), trans('setting::settings.form.prices_include_vat'), $errors, $settings) }}
     </div>
 </div>

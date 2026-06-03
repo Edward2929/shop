@@ -2,6 +2,8 @@
 
 return [
     'checkout' => 'Checkout',
+    'excl_vat' => 'excl. VAT',
+    'vat' => 'VAT',
     'account_details' => 'Account Details',
     'add_new_address' => 'Add New Address',
     'billing_details' => 'Billing Details',

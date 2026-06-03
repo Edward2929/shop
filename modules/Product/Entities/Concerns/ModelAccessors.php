@@ -7,6 +7,7 @@ use Modules\Media\Entities\File;
 use Modules\FlashSale\Entities\FlashSale;
 use Illuminate\Database\Eloquent\Collection;
 use Modules\FlashSale\Entities\FlashSaleProduct;
+use Modules\Support\Services\VatCalculator;
 
 trait ModelAccessors
 {
@@ -33,6 +34,36 @@ trait ModelAccessors
     public function getPriceAttribute($price): Money
     {
         return Money::inDefaultCurrency($price);
+    }
+
+
+    public function getPriceWithVatAttribute(): Money
+    {
+        $base = $this->hasSpecialPrice()
+            ? $this->getSpecialPrice()->amount()
+            : $this->attributes['price'] ?? 0;
+
+        return VatCalculator::priceIncludingVat($base);
+    }
+
+
+    public function getPriceWithoutVatAttribute(): Money
+    {
+        $base = $this->hasSpecialPrice()
+            ? $this->getSpecialPrice()->amount()
+            : $this->attributes['price'] ?? 0;
+
+        return VatCalculator::priceExcludingVat($base);
+    }
+
+
+    public function getVatAmountAttribute(): Money
+    {
+        $base = $this->hasSpecialPrice()
+            ? $this->getSpecialPrice()->amount()
+            : $this->attributes['price'] ?? 0;
+
+        return VatCalculator::vatMoney($base);
     }
 
 

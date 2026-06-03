@@ -61,6 +61,20 @@ Alpine.data(
             return this.item.media.length !== 0;
         },
 
+        priceExcludingVat(amount) {
+            if (FleetCart.pricesIncludeVat) {
+                return amount / (1 + FleetCart.vatRate / 100);
+            }
+            return amount;
+        },
+
+        vatAmount(amount) {
+            const inclusive = FleetCart.pricesIncludeVat
+                ? amount
+                : amount * (1 + FleetCart.vatRate / 100);
+            return inclusive - inclusive / (1 + FleetCart.vatRate / 100);
+        },
+
         get productPrice() {
             return this.hasSpecialPrice
                 ? this.item.selling_price.inCurrentCurrency.amount

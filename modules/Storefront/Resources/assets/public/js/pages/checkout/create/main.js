@@ -449,6 +449,22 @@ Alpine.data(
                 });
         },
 
+        checkoutSubtotalExclVat() {
+            const subTotal = this.$store.cart.subTotal;
+            if (FleetCart.pricesIncludeVat) {
+                return subTotal / (1 + FleetCart.vatRate / 100);
+            }
+            return subTotal;
+        },
+
+        checkoutVatAmount() {
+            const subTotal = this.$store.cart.subTotal;
+            const inclusive = FleetCart.pricesIncludeVat
+                ? subTotal
+                : subTotal * (1 + FleetCart.vatRate / 100);
+            return inclusive - inclusive / (1 + FleetCart.vatRate / 100);
+        },
+
         placeOrder() {
             if (!this.form.terms_and_conditions || this.placingOrder) {
                 return;

@@ -2,6 +2,7 @@
 
 return [
     'left_in_stock' => ':count left in stock',
+    'vat' => 'VAT',
     'in_stock' => 'In stock',
     'out_of_stock' => 'Out of stock',
     'wishlist' => 'Wishlist',

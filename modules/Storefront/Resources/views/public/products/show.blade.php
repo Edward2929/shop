@@ -121,6 +121,8 @@
     {!! $productSchemaMarkup->toScript() !!}
 
     <script>
+        FleetCart.vatRate = {{ (float)(setting('store_vat_rate') ?? 20) }};
+        FleetCart.pricesIncludeVat = {{ setting('prices_include_vat') ? 'true' : 'false' }};
         FleetCart.langs['storefront::product.left_in_stock'] = '{{ trans('storefront::product.left_in_stock') }}';
         FleetCart.langs['storefront::product.reviews'] = '{{ trans("storefront::product.reviews") }}';
         FleetCart.langs['storefront::product.review_submitted'] = '{{ trans("storefront::product.review_submitted") }}';

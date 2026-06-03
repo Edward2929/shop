@@ -72,25 +72,35 @@
     <div class="details-info-middle">
         @if ($product->variant)
             <template x-if="isActiveItem">
-                <div class="product-price">
-                    <template x-if="hasSpecialPrice">
-                        <span class="special-price" x-text="formatCurrency(specialPrice)"></span>
-                    </template>
+                <div>
+                    <div class="product-price">
+                        <template x-if="hasSpecialPrice">
+                            <span class="special-price" x-text="formatCurrency(priceExcludingVat(specialPrice))"></span>
+                        </template>
 
-                    <span class="previous-price" x-text="formatCurrency(regularPrice)">
-                        {!! $item->is_active ? $item->hasSpecialPrice() ? $item->special_price->format() : $item->price->format() : '' !!}
-                    </span>
+                        <span class="previous-price" x-text="formatCurrency(priceExcludingVat(regularPrice))">
+                            {!! $item->is_active ? $item->price_without_vat->convertToCurrentCurrency()->format() : '' !!}
+                        </span>
+                    </div>
+                    <div class="vat-info text-muted small">
+                        {{ trans('storefront::product.vat') }}: <span x-text="formatCurrency(vatAmount(hasSpecialPrice ? specialPrice : regularPrice))"></span>
+                    </div>
                 </div>
             </template>
         @else
-            <div class="product-price">
-                <template x-if="hasSpecialPrice">
-                    <span class="special-price" x-text="formatCurrency(specialPrice)"></span>
-                </template>
+            <div>
+                <div class="product-price">
+                    <template x-if="hasSpecialPrice">
+                        <span class="special-price" x-text="formatCurrency(priceExcludingVat(specialPrice))"></span>
+                    </template>
 
-                <span class="previous-price" x-text="formatCurrency(regularPrice)">
-                    {{ $item->hasSpecialPrice() ? $item->special_price->format() : $item->price->format() }}
-                </span>
+                    <span class="previous-price" x-text="formatCurrency(priceExcludingVat(regularPrice))">
+                        {{ $item->price_without_vat->convertToCurrentCurrency()->format() }}
+                    </span>
+                </div>
+                <div class="vat-info text-muted small">
+                    {{ trans('storefront::product.vat') }}: <span x-text="formatCurrency(vatAmount(hasSpecialPrice ? specialPrice : regularPrice))"></span>
+                </div>
             </div>
         @endif
 

@@ -3,12 +3,13 @@
 use Modules\Product\Entities\Product;
 use Modules\FlashSale\Entities\FlashSale;
 use Modules\Product\Entities\ProductVariant;
+use Modules\Support\Services\VatCalculator;
 
 if (!function_exists('product_price_formatted')) {
     /**
-     * Get the selling price of the given product.
+     * Get the selling price of the given product — always VAT-inclusive for listings.
      *
-     * @param Product $productOrProductVariant
+     * @param Product|ProductVariant $productOrProductVariant
      * @param Closure|null $callback
      *
      * @return string
@@ -16,9 +17,11 @@ if (!function_exists('product_price_formatted')) {
     function product_price_formatted(Product|ProductVariant $productOrProductVariant, Closure $callback = null): string
     {
         if ($productOrProductVariant instanceof Product && FlashSale::contains($productOrProductVariant)) {
-            $sellingPrice = $productOrProductVariant->hasSpecialPrice() ? $productOrProductVariant->getSpecialPrice() : $productOrProductVariant->price;
-            $previousPrice = $sellingPrice->convertToCurrentCurrency()->format();
-            $flashSalePrice = FlashSale::pivot($productOrProductVariant)->price->convertToCurrentCurrency()->format();
+            $sellingPrice = $productOrProductVariant->hasSpecialPrice()
+                ? $productOrProductVariant->getSpecialPrice()
+                : $productOrProductVariant->price;
+            $previousPrice  = VatCalculator::priceIncludingVat($sellingPrice->amount())->convertToCurrentCurrency()->format();
+            $flashSalePrice = VatCalculator::priceIncludingVat(FlashSale::pivot($productOrProductVariant)->price->amount())->convertToCurrentCurrency()->format();
 
             if (is_callable($callback)) {
                 return $callback($flashSalePrice, $previousPrice);
@@ -27,8 +30,9 @@ if (!function_exists('product_price_formatted')) {
             return "<span class='special-price'>{$flashSalePrice}</span> <span class='previous-price'>{$previousPrice}</span>";
         }
 
-        $price = $productOrProductVariant->price->convertToCurrentCurrency()->format();
-        $specialPrice = $productOrProductVariant->getSpecialPrice()->convertToCurrentCurrency()->format();
+        $rawAmount    = $productOrProductVariant->attributes['price'] ?? 0;
+        $price        = VatCalculator::priceIncludingVat($rawAmount)->convertToCurrentCurrency()->format();
+        $specialPrice = VatCalculator::priceIncludingVat($productOrProductVariant->getSpecialPrice()->amount())->convertToCurrentCurrency()->format();
 
         if (is_callable($callback)) {
             return $callback($price, $specialPrice);

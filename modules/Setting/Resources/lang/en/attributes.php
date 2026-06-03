@@ -8,6 +8,8 @@ return [
     'reviews_enabled' => 'Reviews & Ratings',
     'auto_approve_reviews' => 'Auto Approve Reviews',
     'cookie_bar_enabled' => 'Cookie Bar',
+    'store_vat_rate' => 'Store VAT Rate (%)',
+    'prices_include_vat' => 'Prices Include VAT',
 
     'maintenance_mode' => 'Maintenance Mode',
 

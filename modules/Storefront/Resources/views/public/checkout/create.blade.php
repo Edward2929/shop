@@ -156,6 +156,8 @@
         FleetCart.langs['storefront::checkout.remember_about_your_order'] = '{{ trans("storefront::checkout.remember_about_your_order") }}';
         FleetCart.langs['storefront::checkout.paytr_single_payment'] = '{{ trans("storefront::checkout.paytr_single_payment") }}';
         FleetCart.langs['storefront::checkout.paytr_installments'] = '{{ trans("storefront::checkout.paytr_installments") }}';
+        FleetCart.vatRate = {{ (float)(setting('store_vat_rate') ?? 20) }};
+        FleetCart.pricesIncludeVat = {{ setting('prices_include_vat') ? 'true' : 'false' }};
         FleetCart.paytrEnabled = {{ setting('paytr_enabled') ? 'true' : 'false' }};
         FleetCart.paytrMode = '{{ setting('paytr_mode') ?: 'iframe' }}';
         FleetCart.paytrInstallmentEnabled = {{ setting('paytr_installment_enabled') ? 'true' : 'false' }};

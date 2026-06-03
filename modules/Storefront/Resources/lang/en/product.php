@@ -38,4 +38,9 @@ return [
     'related_products' => 'Related Products',
     'show_more' => 'Show More',
     'show_less' => 'Show Less',
+    'installment_options' => 'Installment Options',
+    'installment_count' => 'Installments',
+    'installment_monthly' => 'Monthly Amount',
+    'installment_total' => 'Total',
+    'installment_single' => 'Single Payment',
 ];

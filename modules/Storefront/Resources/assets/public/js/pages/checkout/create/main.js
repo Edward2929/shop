@@ -449,22 +449,6 @@ Alpine.data(
                 });
         },
 
-        checkoutSubtotalExclVat() {
-            const subTotal = this.$store.cart.subTotal;
-            if (FleetCart.pricesIncludeVat) {
-                return subTotal / (1 + FleetCart.vatRate / 100);
-            }
-            return subTotal;
-        },
-
-        checkoutVatAmount() {
-            const subTotal = this.$store.cart.subTotal;
-            const inclusive = FleetCart.pricesIncludeVat
-                ? subTotal
-                : subTotal * (1 + FleetCart.vatRate / 100);
-            return inclusive - inclusive / (1 + FleetCart.vatRate / 100);
-        },
-
         placeOrder() {
             if (!this.form.terms_and_conditions || this.placingOrder) {
                 return;
@@ -856,17 +840,31 @@ Alpine.data(
                 const res = await axios.post('/paytr/bin-query', { bin_number: bin });
                 this.paytrBinInfo = res.data;
 
-                if (res.data.status === 'success' && res.data.brand && res.data.brand !== 'none') {
-                    const ratesRes = await axios.get('/paytr/installment-rates');
-                    if (ratesRes.data.status === 'success') {
-                        const maxInst = parseInt(ratesRes.data.max_inst_non_bus) || FleetCart.paytrMaxInstallment || 12;
-                        this.paytrInstallments = this.buildInstallmentOptions(maxInst);
-                    }
-                } else {
+                // Only skip installments for confirmed debit cards
+                if (res.data.status === 'success' && res.data.card_type === 'Debit') {
                     this.paytrInstallments = [];
+                    return;
                 }
+
+                // Use max_inst from BIN response if available, else fall back to merchant setting
+                let maxInst = (res.data.status === 'success' && parseInt(res.data.max_inst) > 0)
+                    ? parseInt(res.data.max_inst)
+                    : null;
+
+                if (!maxInst) {
+                    try {
+                        const ratesRes = await axios.get('/paytr/installment-rates');
+                        if (ratesRes.data.status === 'success') {
+                            maxInst = parseInt(ratesRes.data.max_inst_non_bus) || FleetCart.paytrMaxInstallment || 12;
+                        }
+                    } catch {}
+                }
+
+                this.paytrInstallments = this.buildInstallmentOptions(maxInst || FleetCart.paytrMaxInstallment || 12);
             } catch {
-                this.paytrInstallments = [];
+                // BIN query failed — show installments using merchant default
+                const maxInst = FleetCart.paytrMaxInstallment || 12;
+                this.paytrInstallments = this.buildInstallmentOptions(maxInst);
             }
         },
 

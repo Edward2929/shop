@@ -88,15 +88,9 @@
             <template x-if="cartFetched">
                 <ul class="list-inline order-summary-list">
                     <li>
-                        <label>{{ trans('storefront::checkout.subtotal') }} ({{ trans('storefront::checkout.excl_vat') }})</label>
+                        <label>{{ trans('storefront::checkout.subtotal') }}</label>
 
-                        <span x-text="formatCurrency(checkoutSubtotalExclVat())"></span>
-                    </li>
-
-                    <li>
-                        <label>{{ trans('storefront::checkout.vat') }} (<span x-text="FleetCart.vatRate"></span>%)</label>
-
-                        <span x-text="formatCurrency(checkoutVatAmount())"></span>
+                        <span x-text="formatCurrency($store.cart.subTotal)"></span>
                     </li>
 
                     <template x-for="(tax, index) in cart.taxes" :key="index">

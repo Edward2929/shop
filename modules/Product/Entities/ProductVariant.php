@@ -3,6 +3,7 @@
 namespace Modules\Product\Entities;
 
 use Modules\Support\Money;
+use Modules\Support\ProductMoney;
 use Modules\Media\Entities\File;
 use Modules\Support\Eloquent\Model;
 use Modules\Media\Eloquent\HasMedia;
@@ -128,6 +129,13 @@ class ProductVariant extends Model
 
     public function getPriceAttribute($price)
     {
+        $fixedPrices = $this->attributes['fixed_prices'] ?? null;
+        $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
+
+        if (!empty($fixedPricesArray)) {
+            return ProductMoney::inDefaultCurrencyWithFixed($price, $fixedPricesArray);
+        }
+
         return Money::inDefaultCurrency($price);
     }
 
@@ -142,6 +150,13 @@ class ProductVariant extends Model
 
     public function getSellingPriceAttribute($sellingPrice)
     {
+        $fixedPrices = $this->attributes['fixed_prices'] ?? null;
+        $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
+
+        if (!empty($fixedPricesArray)) {
+            return ProductMoney::inDefaultCurrencyWithFixed($sellingPrice, $fixedPricesArray);
+        }
+
         return Money::inDefaultCurrency($sellingPrice);
     }
 

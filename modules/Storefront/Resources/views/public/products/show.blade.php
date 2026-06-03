@@ -96,6 +96,14 @@
                                         </a>
                                     </li>
                                 @endif
+
+                                @if (setting('paytr_installment_enabled'))
+                                    <li class="nav-item" role="presentation">
+                                        <a href="#installments" data-bs-toggle="tab" class="nav-link">
+                                            {{ trans('storefront::product.installment_options') }}
+                                        </a>
+                                    </li>
+                                @endif
                             </ul>
 
                             <hr>
@@ -105,6 +113,9 @@
                             @include('storefront::public.products.show.tab_description')
                             @include('storefront::public.products.show.tab_specification')
                             @include('storefront::public.products.show.tab_reviews')
+                            @if (setting('paytr_installment_enabled'))
+                                @include('storefront::public.products.show.tab_installments')
+                            @endif
                         </div>
                     </div>
 

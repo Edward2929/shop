@@ -106,4 +106,16 @@ return [
         'confirm_password' => 'Confirm Password',
         'save_changes' => 'Save Changes',
     ],
+
+    'receipt' => [
+        'section_title'    => 'Payment Receipt',
+        'upload_label'     => 'Upload Receipt (JPG, PNG, PDF — max 5MB)',
+        'upload_btn'       => 'Upload Receipt',
+        'uploaded'         => 'Receipt uploaded successfully.',
+        'status_pending'   => 'Pending Review',
+        'status_approved'  => 'Approved',
+        'status_rejected'  => 'Rejected',
+        'admin_note'       => 'Admin Note',
+        'bank_transfer_info' => 'Please transfer the order total to our bank account and upload your receipt below.',
+    ],
 ];

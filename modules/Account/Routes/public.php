@@ -10,6 +10,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('account/orders', 'AccountOrdersController@index')->name('account.orders.index');
     Route::get('account/orders/{id}', 'AccountOrdersController@show')->name('account.orders.show');
+    Route::post('account/orders/{id}/receipt', 'AccountReceiptController@store')->name('account.orders.receipt.store');
 
     Route::get('account/downloads', 'AccountDownloadsController@index')->name('account.downloads.index');
     Route::get('account/downloads/{id}', 'AccountDownloadsController@show')->name('account.downloads.show');

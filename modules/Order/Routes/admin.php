@@ -43,3 +43,21 @@ Route::get('orders/{order}/print', [
     'uses' => 'OrderPrintController@show',
     'middleware' => 'can:admin.orders.show',
 ]);
+
+Route::get('orders/{order}/receipt/download', [
+    'as' => 'admin.orders.receipt.download',
+    'uses' => 'OrderReceiptController@download',
+    'middleware' => 'can:admin.orders.show',
+]);
+
+Route::put('orders/{order}/receipt/approve', [
+    'as' => 'admin.orders.receipt.approve',
+    'uses' => 'OrderReceiptController@approve',
+    'middleware' => 'can:admin.orders.edit',
+]);
+
+Route::put('orders/{order}/receipt/reject', [
+    'as' => 'admin.orders.receipt.reject',
+    'uses' => 'OrderReceiptController@reject',
+    'middleware' => 'can:admin.orders.edit',
+]);

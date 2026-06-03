@@ -13,6 +13,12 @@
                     <h2>{{ trans('storefront::order_complete.order_placed') }}</h2>
                     <span>{!! trans('storefront::order_complete.your_order_has_been_placed', ['id' => $order->id]) !!}</span>
                 </div>
+
+                @if ($order->payment_method === 'Bank Transfer')
+                    <div style="max-width: 600px; margin: 24px auto 0;">
+                        @include('storefront::public.partials.bank_receipt_section', ['order' => $order])
+                    </div>
+                @endif
             </div>
         </div>
     </section>

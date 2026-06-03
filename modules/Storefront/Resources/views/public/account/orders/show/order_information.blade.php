@@ -46,6 +46,8 @@
                 </li>
             @endif
 
+            @include('storefront::public.partials.bank_receipt_section', ['order' => $order])
+
             @if ($order->tracking_reference)
                 <li x-data="{ tracking: '{{ $order->tracking_reference }}' }" class="d-flex align-items-center">
                     <label>{{ trans('storefront::account.view_order.tracking_reference') }}:</label>

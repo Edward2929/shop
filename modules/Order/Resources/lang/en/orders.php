@@ -42,4 +42,17 @@ return [
     'coupon' => 'Coupon',
     'tax' => 'Tax',
     'total' => 'Total',
+
+    'bank_receipt' => 'Bank Transfer Receipt',
+    'receipt_status_pending' => 'Pending Review',
+    'receipt_status_approved' => 'Approved',
+    'receipt_status_rejected' => 'Rejected',
+    'receipt_not_uploaded' => 'Not uploaded yet',
+    'receipt_download' => 'Download Receipt',
+    'receipt_approve' => 'Approve',
+    'receipt_reject' => 'Reject',
+    'receipt_admin_note' => 'Admin Note (optional)',
+    'receipt_approved' => 'Receipt approved and order moved to Processing.',
+    'receipt_rejected' => 'Receipt rejected and order moved to On Hold.',
+    'receipt_uploaded_at' => 'Uploaded at',
 ];

@@ -31,8 +31,8 @@ if (!function_exists('product_price_formatted')) {
         }
 
         $rawAmount    = $productOrProductVariant->attributes['price'] ?? 0;
-        $price        = VatCalculator::priceIncludingVat($rawAmount)->convertToCurrentCurrency()->format();
-        $specialPrice = VatCalculator::priceIncludingVat($productOrProductVariant->getSpecialPrice()->amount())->convertToCurrentCurrency()->format();
+        $price        = VatCalculator::priceIncludingVat((float) $rawAmount)->convertToCurrentCurrency()->format();
+        $specialPrice = VatCalculator::priceIncludingVat((float) ($productOrProductVariant->getSpecialPrice()?->amount() ?? 0))->convertToCurrentCurrency()->format();
 
         if (is_callable($callback)) {
             return $callback($price, $specialPrice);

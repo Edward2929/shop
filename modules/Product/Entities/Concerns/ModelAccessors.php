@@ -48,8 +48,8 @@ trait ModelAccessors
     public function getPriceWithVatAttribute(): Money
     {
         $base = $this->hasSpecialPrice()
-            ? $this->getSpecialPrice()->amount()
-            : $this->attributes['price'] ?? 0;
+            ? ($this->getSpecialPrice()?->amount() ?? 0)
+            : ($this->attributes['price'] ?? 0);
 
         return VatCalculator::priceIncludingVat($base);
     }
@@ -58,8 +58,8 @@ trait ModelAccessors
     public function getPriceWithoutVatAttribute(): Money
     {
         $base = $this->hasSpecialPrice()
-            ? $this->getSpecialPrice()->amount()
-            : $this->attributes['price'] ?? 0;
+            ? ($this->getSpecialPrice()?->amount() ?? 0)
+            : ($this->attributes['price'] ?? 0);
 
         return VatCalculator::priceExcludingVat($base);
     }
@@ -68,8 +68,8 @@ trait ModelAccessors
     public function getVatAmountAttribute(): Money
     {
         $base = $this->hasSpecialPrice()
-            ? $this->getSpecialPrice()->amount()
-            : $this->attributes['price'] ?? 0;
+            ? ($this->getSpecialPrice()?->amount() ?? 0)
+            : ($this->attributes['price'] ?? 0);
 
         return VatCalculator::vatMoney($base);
     }
@@ -77,6 +77,10 @@ trait ModelAccessors
 
     public function getFormattedPriceAttribute(): string
     {
+        if (is_null($this->attributes['price'] ?? null) && !$this->hasSpecialPrice()) {
+            return '';
+        }
+
         return product_price_formatted($this);
     }
 

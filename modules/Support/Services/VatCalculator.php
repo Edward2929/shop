@@ -25,8 +25,10 @@ class VatCalculator
     /**
      * Given the stored (raw) price amount, return price WITHOUT VAT.
      */
-    public static function excludingVat(float $amount): float
+    public static function excludingVat(float|int|null $amount): float
     {
+        $amount = (float) ($amount ?? 0);
+
         if (static::pricesIncludeVat()) {
             return $amount / (1 + static::rate() / 100);
         }
@@ -37,8 +39,10 @@ class VatCalculator
     /**
      * Given the stored (raw) price amount, return price WITH VAT.
      */
-    public static function includingVat(float $amount): float
+    public static function includingVat(float|int|null $amount): float
     {
+        $amount = (float) ($amount ?? 0);
+
         if (!static::pricesIncludeVat()) {
             return $amount * (1 + static::rate() / 100);
         }
@@ -49,7 +53,7 @@ class VatCalculator
     /**
      * Return the VAT amount for a given stored price.
      */
-    public static function vatAmount(float $amount): float
+    public static function vatAmount(float|int|null $amount): float
     {
         return static::includingVat($amount) - static::excludingVat($amount);
     }
@@ -57,7 +61,7 @@ class VatCalculator
     /**
      * Return a Money object (in default currency) for the price WITHOUT VAT.
      */
-    public static function priceExcludingVat(float $storedAmount): Money
+    public static function priceExcludingVat(float|int|null $storedAmount): Money
     {
         return Money::inDefaultCurrency(static::excludingVat($storedAmount));
     }
@@ -65,7 +69,7 @@ class VatCalculator
     /**
      * Return a Money object (in default currency) for the price WITH VAT.
      */
-    public static function priceIncludingVat(float $storedAmount): Money
+    public static function priceIncludingVat(float|int|null $storedAmount): Money
     {
         return Money::inDefaultCurrency(static::includingVat($storedAmount));
     }
@@ -73,7 +77,7 @@ class VatCalculator
     /**
      * Return a Money object (in default currency) for the VAT component.
      */
-    public static function vatMoney(float $storedAmount): Money
+    public static function vatMoney(float|int|null $storedAmount): Money
     {
         return Money::inDefaultCurrency(static::vatAmount($storedAmount));
     }

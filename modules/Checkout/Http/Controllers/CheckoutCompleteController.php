@@ -130,6 +130,21 @@ class CheckoutCompleteController
             }
         }
 
+        // PayTR: callback (bildirim URL) handles order placement; here we just redirect.
+        if (request()->query('paymentMethod') === 'paytr') {
+            $order = Order::findOrFail($orderId);
+
+            // If callback already processed the order, put it in session and redirect.
+            if ($order->status === Order::PROCESSING) {
+                session(['placed_order' => $order]);
+                return redirect()->route('checkout.complete.show');
+            }
+
+            // Callback not yet received (rare race condition) – still show success.
+            session(['placed_order' => $order]);
+            return redirect()->route('checkout.complete.show');
+        }
+
         $order = Order::findOrFail($orderId);
 
         $gateway = Gateway::get(request('paymentMethod'));

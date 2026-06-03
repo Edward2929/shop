@@ -66,6 +66,49 @@
                     </template>
                 </form>
             @endif
+
+            @if (setting('paytr_enabled') && setting('paytr_mode') === 'iframe')
+                {{-- PayTR iFrame modal --}}
+                <template x-if="paytrIframeToken">
+                    <div class="paytr-iframe-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);z-index:9999;display:flex;align-items:center;justify-content:center;">
+                        <div style="background:#fff;border-radius:8px;padding:16px;width:min(600px,95vw);position:relative;">
+                            <button type="button"
+                                style="position:absolute;top:8px;right:12px;background:none;border:none;font-size:20px;cursor:pointer;"
+                                @click="paytrIframeToken = null; deleteOrder(null)">✕</button>
+                            <script src="https://www.paytr.com/js/iframeResizer.min.js"></script>
+                            <iframe
+                                :src="'https://www.paytr.com/odeme/guvenli/' + paytrIframeToken"
+                                id="paytriframe"
+                                frameborder="0"
+                                scrolling="no"
+                                style="width:100%;"
+                            ></iframe>
+                            <script>iFrameResize({},'#paytriframe');</script>
+                        </div>
+                    </div>
+                </template>
+            @endif
+
+            @if (setting('paytr_enabled') && setting('paytr_mode') === 'direct')
+                {{-- PayTR Direct API hidden form (submits card data directly to PayTR) --}}
+                <template x-if="paytrDirectFormFields">
+                    <form
+                        x-ref="paytrDirectForm"
+                        method="post"
+                        :action="paytrDirectPayUrl"
+                    >
+                        <template x-for="(value, name) in paytrDirectFormFields" :key="name">
+                            <input :name="name" type="hidden" :value="value" />
+                        </template>
+                        {{-- Card fields come from checkout form --}}
+                        <input type="hidden" name="cc_owner" :value="form.paytr_cc_owner" />
+                        <input type="hidden" name="card_number" :value="(form.paytr_card_number || '').replace(/\s/g, '')" />
+                        <input type="hidden" name="expiry_month" :value="form.paytr_expiry_month" />
+                        <input type="hidden" name="expiry_year" :value="form.paytr_expiry_year" />
+                        <input type="hidden" name="cvv" :value="form.paytr_cvv" />
+                    </form>
+                </template>
+            @endif
         </div>
     </section>
 @endsection
@@ -111,6 +154,14 @@
         FleetCart.stripeIntegrationType = '{{ setting("stripe_integration_type") }}',
         FleetCart.langs['storefront::checkout.payment_for_order'] = '{{ trans("storefront::checkout.payment_for_order") }}';
         FleetCart.langs['storefront::checkout.remember_about_your_order'] = '{{ trans("storefront::checkout.remember_about_your_order") }}';
+        FleetCart.langs['storefront::checkout.paytr_single_payment'] = '{{ trans("storefront::checkout.paytr_single_payment") }}';
+        FleetCart.langs['storefront::checkout.paytr_installments'] = '{{ trans("storefront::checkout.paytr_installments") }}';
+        FleetCart.paytrEnabled = {{ setting('paytr_enabled') ? 'true' : 'false' }};
+        FleetCart.paytrMode = '{{ setting('paytr_mode') ?: 'iframe' }}';
+        FleetCart.paytrInstallmentEnabled = {{ setting('paytr_installment_enabled') ? 'true' : 'false' }};
+        FleetCart.paytrMaxInstallment = {{ (int)(setting('paytr_max_installment') ?: 12) }};
+        FleetCart.paytrCommissionRate = {{ (float)(setting('paytr_installment_commission_rate') ?: 0) }};
+        FleetCart.paytrCommissionToCustomer = {{ setting('paytr_installment_commission_to_customer') ? 'true' : 'false' }};
     </script>
 
     @vite([

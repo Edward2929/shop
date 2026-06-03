@@ -41,6 +41,13 @@ Alpine.data(
         authorizeNetToken: null,
         payFastFormFields: {},
         errors: new Errors(),
+        paytrIframeToken: null,
+        paytrDirectFormFields: null,
+        paytrDirectPayUrl: null,
+        paytrInstallmentCount: 0,
+        paytrInstallments: [],
+        paytrBinInfo: null,
+        paytrCardNumber: '',
 
         get cartFetched() {
             return this.$store.cart.fetched;
@@ -178,6 +185,10 @@ Alpine.data(
             this.$watch("form.payment_method", (newPaymentMethod) => {
                 if (newPaymentMethod === "paypal") {
                     this.$nextTick(this.renderPayPalButton());
+                }
+                if (newPaymentMethod !== "paytr") {
+                    this.paytrIframeToken = null;
+                    this.paytrInstallments = [];
                 }
             });
 
@@ -470,6 +481,8 @@ Alpine.data(
                         this.confirmMercadoPagoPayment(data);
                     } else if (this.form.payment_method === "payfast") {
                         this.confirmPayFastPayment(data);
+                    } else if (this.form.payment_method === "paytr") {
+                        this.confirmPayTRPayment(data);
                     } else {
                         this.confirmOrder(
                             data.orderId,
@@ -798,6 +811,69 @@ Alpine.data(
             this.$nextTick(() => {
                 this.$refs.payFastForm.submit();
             });
+        },
+
+        confirmPayTRPayment(data) {
+            if (data.mode === 'iframe') {
+                this.paytrIframeToken = data.iframeToken;
+                this.placingOrder = false;
+            } else if (data.mode === 'direct') {
+                this.paytrDirectFormFields = data.formFields;
+                this.paytrDirectPayUrl = data.payUrl;
+
+                this.$nextTick(() => {
+                    const form = this.$refs.paytrDirectForm;
+                    if (form) form.submit();
+                });
+            }
+        },
+
+        async paytrFetchInstallments(cardNumber) {
+            const bin = cardNumber.replace(/\s/g, '').substring(0, 8);
+            if (bin.length < 6) {
+                this.paytrInstallments = [];
+                this.paytrBinInfo = null;
+                return;
+            }
+
+            try {
+                const res = await axios.post('/paytr/bin-query', { bin_number: bin });
+                this.paytrBinInfo = res.data;
+
+                if (res.data.status === 'success' && res.data.brand && res.data.brand !== 'none') {
+                    const ratesRes = await axios.get('/paytr/installment-rates');
+                    if (ratesRes.data.status === 'success') {
+                        const maxInst = parseInt(ratesRes.data.max_inst_non_bus) || FleetCart.paytrMaxInstallment || 12;
+                        this.paytrInstallments = this.buildInstallmentOptions(maxInst);
+                    }
+                } else {
+                    this.paytrInstallments = [];
+                }
+            } catch {
+                this.paytrInstallments = [];
+            }
+        },
+
+        buildInstallmentOptions(max) {
+            const total = this.$store.cart.total;
+            const commRate = FleetCart.paytrCommissionRate || 0;
+            const options = [{ count: 0, label: trans('storefront::checkout.paytr_single_payment'), monthly: total, totalAmount: total }];
+            for (let i = 2; i <= max; i++) {
+                const factor = commRate > 0 ? (1 + commRate / 100) : 1;
+                const totalWithComm = total * factor;
+                options.push({
+                    count: i,
+                    label: `${i} ${trans('storefront::checkout.paytr_installments')}`,
+                    monthly: (totalWithComm / i).toFixed(2),
+                    totalAmount: totalWithComm.toFixed(2),
+                });
+            }
+            return options;
+        },
+
+        selectPaytrInstallment(count) {
+            this.paytrInstallmentCount = count;
+            this.form.paytr_installment_count = count;
         },
     })
 );

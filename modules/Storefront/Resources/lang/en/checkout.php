@@ -27,5 +27,15 @@ return [
     'terms_&_conditions' => 'Terms & Conditions',
     'place_order' => 'Place Order',
     'payment_for_order' => 'Payment for order #:id',
-    'remember_about_your_order' => '(1) Remember about your order'
+    'remember_about_your_order' => '(1) Remember about your order',
+    'card_information' => 'Card Information',
+    'card_holder' => 'Card Holder Name',
+    'card_number' => 'Card Number',
+    'expiry_month' => 'Exp. Month',
+    'expiry_year' => 'Exp. Year',
+    'cvv' => 'CVV',
+    'select_installment' => 'Select Installment Option',
+    'paytr_single_payment' => 'Single Payment',
+    'paytr_installments' => 'Installments',
+    'paytr_total' => 'Total',
 ];

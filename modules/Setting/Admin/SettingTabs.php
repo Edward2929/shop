@@ -13,6 +13,7 @@ use Modules\Media\Entities\File;
 use Modules\Payment\Gateways\Iyzico;
 use Illuminate\Support\Facades\Cache;
 use Modules\Payment\Gateways\MercadoPago;
+use Modules\Payment\Gateways\PayTR;
 
 class SettingTabs extends Tabs
 {
@@ -61,6 +62,7 @@ class SettingTabs extends Tabs
             ->add($this->bKashPayment())
             ->add($this->nagadPayment())
             ->add($this->sslCommerz())
+            ->add($this->paytr())
             ->add($this->cod())
             ->add($this->bankTransfer())
             ->add($this->checkPayment());
@@ -563,6 +565,36 @@ class SettingTabs extends Tabs
             $tab->fields(['cod_enabled', 'translatable.cod_label', 'translatable.cod_description']);
 
             $tab->view('setting::admin.settings.tabs.cod');
+        });
+    }
+
+
+    private function paytr()
+    {
+        return tap(new Tab('paytr', trans('setting::settings.tabs.paytr')), function (Tab $tab) {
+            $tab->weight(70);
+
+            $modes = [
+                'iframe' => trans('setting::settings.tabs.paytr_mode_iframe'),
+                'direct' => trans('setting::settings.tabs.paytr_mode_direct'),
+            ];
+
+            $tab->fields([
+                'paytr_enabled',
+                'translatable.paytr_label',
+                'translatable.paytr_description',
+                'paytr_test_mode',
+                'paytr_mode',
+                'paytr_merchant_id',
+                'paytr_merchant_key',
+                'paytr_merchant_salt',
+                'paytr_installment_enabled',
+                'paytr_max_installment',
+                'paytr_installment_commission_to_customer',
+                'paytr_installment_commission_rate',
+            ]);
+
+            $tab->view('setting::admin.settings.tabs.paytr', ['modes' => $modes]);
         });
     }
 

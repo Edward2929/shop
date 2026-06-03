@@ -216,6 +216,19 @@ return [
     'translatable.check_payment_description' => 'Description',
     'translatable.check_payment_instructions' => 'Instructions',
 
+    'paytr_enabled'                              => 'Status',
+    'translatable.paytr_label'                  => 'Label',
+    'translatable.paytr_description'            => 'Description',
+    'paytr_test_mode'                           => 'Sandbox',
+    'paytr_mode'                                => 'Integration Mode',
+    'paytr_merchant_id'                         => 'Merchant ID',
+    'paytr_merchant_key'                        => 'Merchant Key',
+    'paytr_merchant_salt'                       => 'Merchant Salt',
+    'paytr_installment_enabled'                 => 'Enable Installments',
+    'paytr_max_installment'                     => 'Max Installment Count',
+    'paytr_installment_commission_to_customer'  => 'Pass Commission to Customer',
+    'paytr_installment_commission_rate'         => 'Commission Rate (%)',
+
     # validation
     'supported_countries.*' => 'Supported Countries',
     'supported_currencies.*' => 'Supported Currencies',

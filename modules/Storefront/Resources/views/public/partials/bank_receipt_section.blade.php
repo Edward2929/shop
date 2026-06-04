@@ -1,4 +1,4 @@
-@if ($order->payment_method === 'Bank Transfer')
+@if ($order->getRawOriginal('payment_method') === 'bank_transfer')
     <div class="bank-receipt-section" style="margin-top: 24px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 6px;">
         <h4>{{ trans('storefront::account.receipt.section_title') }}</h4>
 

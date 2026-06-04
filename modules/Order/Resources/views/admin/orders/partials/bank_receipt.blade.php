@@ -1,4 +1,4 @@
-@if ($order->payment_method === 'Bank Transfer')
+@if ($order->getRawOriginal('payment_method') === 'bank_transfer')
     <div class="box" style="margin-top: 20px;">
         <div class="box-header">
             <h3 class="box-title">{{ trans('order::orders.bank_receipt') }}</h3>

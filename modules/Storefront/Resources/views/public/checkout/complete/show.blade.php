@@ -125,7 +125,7 @@
                             </li>
 
                             {{-- PayTR installment info --}}
-                            @if ($order->payment_method === 'PayTR' || $order->paytr_status)
+                            @if ($order->getRawOriginal('payment_method') === 'paytr' || $order->paytr_status)
                                 @if ($order->paytr_payment_type === 'installment' && $order->paytr_installment_count > 1)
                                     <li>
                                         <label>{{ trans('storefront::order_complete.paytr_payment_type') }}</label>
@@ -135,14 +135,14 @@
                                     @if ($order->paytr_installment_amount)
                                         <li>
                                             <label>{{ trans('storefront::order_complete.paytr_installment_amount') }}</label>
-                                            <span>{{ number_format($order->paytr_installment_amount / 100, 2) }} {{ $order->currency }}</span>
+                                            <span>{{ number_format($order->paytr_installment_amount, 2) }} {{ $order->currency }}</span>
                                         </li>
                                     @endif
 
                                     @if ($order->paytr_total_paid)
                                         <li>
                                             <label>{{ trans('storefront::order_complete.paytr_total_paid') }}</label>
-                                            <span>{{ number_format($order->paytr_total_paid / 100, 2) }} {{ $order->currency }}</span>
+                                            <span>{{ number_format($order->paytr_total_paid, 2) }} {{ $order->currency }}</span>
                                         </li>
                                     @endif
                                 @else
@@ -156,7 +156,7 @@
                     </div>
 
                     {{-- Bank Transfer: show bank info + receipt upload --}}
-                    @if ($order->payment_method === 'Bank Transfer')
+                    @if ($order->getRawOriginal('payment_method') === 'bank_transfer')
                         @include('storefront::public.partials.bank_receipt_section', ['order' => $order])
                     @endif
                 </div>

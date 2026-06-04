@@ -32,15 +32,20 @@ class PayTRCallbackController extends Controller
             return response('OK');
         }
 
-        $installmentCount = (int) $request->input('installment_count', 1);
-        $paymentType      = $request->input('payment_type', 'card');
+        $installmentCount   = (int) $request->input('installment_count', 1);
+        $paymentType        = $request->input('payment_type', 'card');
+        $totalPaid          = $totalAmount / 100;
+        $installmentAmount  = $installmentCount > 1
+            ? round($totalPaid / $installmentCount, 2)
+            : null;
 
         $order->update([
-            'paytr_payment_type'      => $installmentCount > 1 ? 'installment' : ($paymentType === 'eft' ? 'eft' : 'single'),
-            'paytr_installment_count' => $installmentCount,
-            'paytr_total_paid'        => $totalAmount / 100,
-            'paytr_status'            => $status,
-            'paytr_raw_response'      => json_encode($request->all()),
+            'paytr_payment_type'       => $installmentCount > 1 ? 'installment' : ($paymentType === 'eft' ? 'eft' : 'single'),
+            'paytr_installment_count'  => $installmentCount,
+            'paytr_installment_amount' => $installmentAmount,
+            'paytr_total_paid'         => $totalPaid,
+            'paytr_status'             => $status,
+            'paytr_raw_response'       => json_encode($request->all()),
         ]);
 
         if ($status === 'success') {

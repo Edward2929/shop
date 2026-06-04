@@ -32,7 +32,7 @@
                 <span>
                     {{ $order->payment_method }}
 
-                    @if ($order->payment_method === 'Bank Transfer')
+                    @if ($order->getRawOriginal('payment_method') === 'bank_transfer')
                         <br>
                         <span style="color: #999; font-size: 13px;">{!! setting('bank_transfer_instructions') !!}</span>
                     @endif

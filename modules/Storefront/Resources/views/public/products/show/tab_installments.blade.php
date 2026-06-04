@@ -2,7 +2,7 @@
     <div x-data="{ get installmentRows() {
         const price = hasSpecialPrice ? specialPrice : regularPrice;
         const maxInst = {{ (int)(setting('paytr_max_installment') ?: 12) }};
-        const commRate = {{ (float)(setting('paytr_commission_rate') ?: 0) }};
+        const commRate = {{ (float)(setting('paytr_installment_commission_rate') ?: 0) }};
         const rows = [];
         for (let i = 2; i <= maxInst; i++) {
             const factor = commRate > 0 ? (1 + commRate / 100) : 1;

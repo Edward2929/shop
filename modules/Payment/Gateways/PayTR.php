@@ -89,8 +89,9 @@ class PayTR implements GatewayInterface
         $installmentCount = (int) $request->input('paytr_installment_count', 0);
 
         $order->update([
-            'paytr_merchant_oid'    => $merchantOid,
-            'paytr_installment_count' => $installmentCount,
+            'paytr_merchant_oid'       => $merchantOid,
+            'paytr_payment_type'       => $installmentCount > 1 ? 'installment' : 'single',
+            'paytr_installment_count'  => $installmentCount,
         ]);
 
         $merchantId   = setting('paytr_merchant_id');

@@ -3,6 +3,7 @@
 namespace Modules\Product\Entities\Concerns;
 
 use Modules\Support\Money;
+use Modules\Support\Services\VatCalculator;
 
 trait HasSpecialPrice
 {
@@ -20,7 +21,7 @@ trait HasSpecialPrice
             $specialPrice = 0;
         }
 
-        return Money::inDefaultCurrency($specialPrice);
+        return Money::inDefaultCurrency(VatCalculator::includingVat((float) $specialPrice));
     }
 
 

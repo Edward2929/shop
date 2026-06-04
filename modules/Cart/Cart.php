@@ -83,7 +83,7 @@ class Cart extends DarryldecodeCart implements JsonSerializable
         $this->add([
             'id' => md5("product_id.{$productId}.variant_id.{$variantId}:options." . serialize($options)),
             'name' => $product->name,
-            'price' => $item->selling_price->amount(),
+            'price' => $item->raw_selling_price,
             'quantity' => (int)$qty,
             'attributes' => [
                 'product' => $product,
@@ -412,13 +412,7 @@ class Cart extends DarryldecodeCart implements JsonSerializable
 
     public function subTotal()
     {
-        $itemsTotal = $this->items()->sum(function (CartItem $cartItem) {
-            return $cartItem->unitPrice()->convertToCurrentCurrency()->amount() * $cartItem->qty;
-        });
-
-        return Money::inCurrentCurrency($itemsTotal)->add(
-            $this->optionsPrice()->convertToCurrentCurrency()
-        );
+        return Money::inDefaultCurrency($this->getSubTotal())->add($this->optionsPrice());
     }
 
 

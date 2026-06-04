@@ -37,11 +37,13 @@ trait ModelAccessors
         $fixedPrices = $this->attributes['fixed_prices'] ?? null;
         $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
 
+        $vatInclusive = VatCalculator::includingVat((float) $price);
+
         if (!empty($fixedPricesArray)) {
-            return ProductMoney::inDefaultCurrencyWithFixed($price, $fixedPricesArray);
+            return ProductMoney::inDefaultCurrencyWithFixed($vatInclusive, $fixedPricesArray);
         }
 
-        return Money::inDefaultCurrency($price);
+        return Money::inDefaultCurrency($vatInclusive);
     }
 
 
@@ -106,7 +108,11 @@ trait ModelAccessors
     public function getSpecialPriceAttribute($specialPrice)
     {
         if (!is_null($specialPrice)) {
-            return Money::inDefaultCurrency($specialPrice);
+            if (($this->attributes['special_price_type'] ?? null) === 'percent') {
+                return Money::inDefaultCurrency($specialPrice);
+            }
+
+            return Money::inDefaultCurrency(VatCalculator::includingVat((float) $specialPrice));
         }
     }
 
@@ -134,11 +140,23 @@ trait ModelAccessors
         $fixedPrices = $this->attributes['fixed_prices'] ?? null;
         $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
 
+        $vatInclusive = VatCalculator::includingVat((float) $sellingPrice);
+
         if (!empty($fixedPricesArray) && !FlashSale::contains($this)) {
-            return ProductMoney::inDefaultCurrencyWithFixed($sellingPrice, $fixedPricesArray);
+            return ProductMoney::inDefaultCurrencyWithFixed($vatInclusive, $fixedPricesArray);
         }
 
-        return Money::inDefaultCurrency($sellingPrice);
+        return Money::inDefaultCurrency($vatInclusive);
+    }
+
+
+    public function getRawSellingPriceAttribute(): float
+    {
+        if (FlashSale::contains($this)) {
+            return (float) FlashSale::pivot($this)->price->amount();
+        }
+
+        return (float) ($this->attributes['selling_price'] ?? $this->attributes['price'] ?? 0);
     }
 
 

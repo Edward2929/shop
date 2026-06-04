@@ -156,8 +156,14 @@ class Product extends Model implements Sitemapable
             }
 
             $product->withoutEvents(function () use ($product) {
+                $rawSpecial = $product->attributes['special_price'] ?? null;
+                $rawPrice   = $product->attributes['price'] ?? 0;
                 $product->update([
-                    'selling_price' => ($product->hasSpecialPrice() ? $product->getSpecialPrice() : $product->price)->amount(),
+                    'selling_price' => $product->hasSpecialPrice() && $rawSpecial !== null
+                        ? ($product->special_price_type === 'percent'
+                            ? max(0, $rawPrice - ($rawSpecial / 100) * $rawPrice)
+                            : $rawSpecial)
+                        : $rawPrice,
                 ]);
             });
         });

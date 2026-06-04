@@ -23,11 +23,17 @@ if (!function_exists('product_price_formatted')) {
                 ? (is_array($flashRawFixed) ? $flashRawFixed : json_decode($flashRawFixed, true))
                 : [];
 
-            $sellingPrice = $productOrProductVariant->hasSpecialPrice()
-                ? $productOrProductVariant->getSpecialPrice()
-                : $productOrProductVariant->price;
+            $flashRawAttr   = $productOrProductVariant->attributes['price'] ?? 0;
+            $flashRawSpec   = $productOrProductVariant->attributes['special_price'] ?? null;
+            if ($productOrProductVariant->hasSpecialPrice() && $flashRawSpec !== null) {
+                $rawSelling = $productOrProductVariant->special_price_type === 'percent'
+                    ? max(0, (float) $flashRawAttr - ((float) $flashRawSpec / 100) * (float) $flashRawAttr)
+                    : (float) $flashRawSpec;
+            } else {
+                $rawSelling = (float) $flashRawAttr;
+            }
             $previousPrice  = ProductMoney::inDefaultCurrencyWithFixed(
-                VatCalculator::includingVat($sellingPrice->amount()),
+                VatCalculator::includingVat($rawSelling),
                 $flashFixedPrices
             )->convertToCurrentCurrency()->format();
             $flashSalePrice = VatCalculator::priceIncludingVat(FlashSale::pivot($productOrProductVariant)->price->amount())->convertToCurrentCurrency()->format();
@@ -50,8 +56,13 @@ if (!function_exists('product_price_formatted')) {
             ->convertToCurrentCurrency()
             ->format();
 
-        $specialRaw     = $productOrProductVariant->getSpecialPrice()?->amount() ?? 0;
-        $specialVatIncl = VatCalculator::includingVat((float) $specialRaw);
+        $rawSpecialAttr = $productOrProductVariant->attributes['special_price'] ?? null;
+        if ($rawSpecialAttr !== null && $productOrProductVariant->special_price_type === 'percent') {
+            $specialRaw = max(0, (float) $rawAmount - ((float) $rawSpecialAttr / 100) * (float) $rawAmount);
+        } else {
+            $specialRaw = (float) ($rawSpecialAttr ?? 0);
+        }
+        $specialVatIncl = VatCalculator::includingVat($specialRaw);
         $specialPrice   = ProductMoney::inDefaultCurrencyWithFixed($specialVatIncl, $fixedPricesArray)
             ->convertToCurrentCurrency()
             ->format();

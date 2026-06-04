@@ -4,6 +4,7 @@ namespace Modules\Product\Entities;
 
 use Modules\Support\Money;
 use Modules\Support\ProductMoney;
+use Modules\Support\Services\VatCalculator;
 use Modules\Media\Entities\File;
 use Modules\Support\Eloquent\Model;
 use Modules\Media\Eloquent\HasMedia;
@@ -79,8 +80,14 @@ class ProductVariant extends Model
 
         static::saved(function ($productVariant) {
             $productVariant->withoutEvents(function () use ($productVariant) {
+                $rawSpecial = $productVariant->attributes['special_price'] ?? null;
+                $rawPrice   = $productVariant->attributes['price'] ?? 0;
                 $productVariant->update([
-                    'selling_price' => ($productVariant->hasSpecialPrice() ? $productVariant->getSpecialPrice() : $productVariant->price)->amount(),
+                    'selling_price' => $productVariant->hasSpecialPrice() && $rawSpecial !== null
+                        ? ($productVariant->special_price_type === 'percent'
+                            ? max(0, $rawPrice - ($rawSpecial / 100) * $rawPrice)
+                            : $rawSpecial)
+                        : $rawPrice,
                 ]);
             });
         });
@@ -132,18 +139,24 @@ class ProductVariant extends Model
         $fixedPrices = $this->attributes['fixed_prices'] ?? null;
         $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
 
+        $vatInclusive = VatCalculator::includingVat((float) $price);
+
         if (!empty($fixedPricesArray)) {
-            return ProductMoney::inDefaultCurrencyWithFixed($price, $fixedPricesArray);
+            return ProductMoney::inDefaultCurrencyWithFixed($vatInclusive, $fixedPricesArray);
         }
 
-        return Money::inDefaultCurrency($price);
+        return Money::inDefaultCurrency($vatInclusive);
     }
 
 
     public function getSpecialPriceAttribute($specialPrice)
     {
         if (!is_null($specialPrice)) {
-            return Money::inDefaultCurrency($specialPrice);
+            if (($this->attributes['special_price_type'] ?? null) === 'percent') {
+                return Money::inDefaultCurrency($specialPrice);
+            }
+
+            return Money::inDefaultCurrency(VatCalculator::includingVat((float) $specialPrice));
         }
     }
 
@@ -153,11 +166,19 @@ class ProductVariant extends Model
         $fixedPrices = $this->attributes['fixed_prices'] ?? null;
         $fixedPricesArray = $fixedPrices ? (is_array($fixedPrices) ? $fixedPrices : json_decode($fixedPrices, true)) : [];
 
+        $vatInclusive = VatCalculator::includingVat((float) $sellingPrice);
+
         if (!empty($fixedPricesArray)) {
-            return ProductMoney::inDefaultCurrencyWithFixed($sellingPrice, $fixedPricesArray);
+            return ProductMoney::inDefaultCurrencyWithFixed($vatInclusive, $fixedPricesArray);
         }
 
-        return Money::inDefaultCurrency($sellingPrice);
+        return Money::inDefaultCurrency($vatInclusive);
+    }
+
+
+    public function getRawSellingPriceAttribute(): float
+    {
+        return (float) ($this->attributes['selling_price'] ?? $this->attributes['price'] ?? 0);
     }
 
 

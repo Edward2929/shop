@@ -27,10 +27,10 @@ class ProductVariantResource extends JsonResource
             'qty' => $this->qty,
             'in_stock' => $this->in_stock,
             'sku' => $this->sku,
-            'price' => $this->price?->convertToCurrentCurrency()->amount(),
+            'price' => $this->price?->amount(),
             'fixed_prices' => $this->fixed_prices ?? (object)[],
             'special_price_type' => $this->special_price_type,
-            'special_price' => $this->special_price?->convertToCurrentCurrency()->amount(),
+            'special_price' => $this->special_price?->amount(),
             'is_active' => $this->is_active,
             'is_default' => $this->is_default,
         ];

@@ -271,7 +271,7 @@ class Money implements JsonSerializable
     }
 
 
-    private function newInstance($amount)
+    protected function newInstance($amount)
     {
         return new self($amount, $this->currency);
     }

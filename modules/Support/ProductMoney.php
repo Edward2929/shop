@@ -4,7 +4,7 @@ namespace Modules\Support;
 
 class ProductMoney extends Money
 {
-    private array $fixedPrices;
+    protected array $fixedPrices;
 
     public function __construct($amount, $currency, array $fixedPrices = [])
     {
@@ -21,10 +21,18 @@ class ProductMoney extends Money
     {
         $current = currency();
 
-        if (isset($this->fixedPrices[$current]) && $this->fixedPrices[$current] !== null) {
+        if (isset($this->fixedPrices[$current])
+            && $this->fixedPrices[$current] !== null
+            && $this->fixedPrices[$current] !== ''
+        ) {
             return new Money((float) $this->fixedPrices[$current], $current);
         }
 
         return parent::convertToCurrentCurrency($currencyRate);
+    }
+
+    protected function newInstance($amount): static
+    {
+        return new self($amount, $this->currency(), $this->fixedPrices);
     }
 }

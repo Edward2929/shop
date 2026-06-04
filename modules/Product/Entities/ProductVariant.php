@@ -107,7 +107,7 @@ class ProductVariant extends Model
 
     public function scopeWithPrice($query)
     {
-        $query->addSelect(['price', 'special_price', 'special_price_type', 'special_price_start', 'special_price_end']);
+        $query->addSelect(['price', 'special_price', 'special_price_type', 'special_price_start', 'special_price_end', 'fixed_prices']);
     }
 
 

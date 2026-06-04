@@ -268,8 +268,4 @@ const { flatPickrConfig } = useConfigs();
 const { removeDatePickerValue } = useProductMethods();
 
 const supportedCurrencies = computed(() => FleetCart.supportedCurrencies || []);
-
-if (!form.fixed_prices) {
-    form.fixed_prices = {};
-}
 </script>

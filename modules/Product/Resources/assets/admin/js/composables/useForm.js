@@ -42,6 +42,7 @@ function initialFormData() {
         up_sells: [],
         cross_sells: [],
         related_products: [],
+        fixed_prices: {},
     };
 }
 

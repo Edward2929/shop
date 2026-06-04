@@ -3,6 +3,7 @@
 namespace Modules\Order\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Modules\Order\Entities\Order;
@@ -32,7 +33,11 @@ class OrderReceiptController
             'status'                  => Order::PROCESSING,
         ]);
 
-        Mail::to($order->customer_email)->send(new ReceiptStatusChanged($order));
+        try {
+            Mail::to($order->customer_email)->send(new ReceiptStatusChanged($order));
+        } catch (\Exception $e) {
+            Log::error('Receipt approved notification failed: ' . $e->getMessage());
+        }
 
         return response()->json(['message' => trans('order::orders.receipt_approved')]);
     }
@@ -51,7 +56,11 @@ class OrderReceiptController
             'status'                  => Order::ON_HOLD,
         ]);
 
-        Mail::to($order->customer_email)->send(new ReceiptStatusChanged($order));
+        try {
+            Mail::to($order->customer_email)->send(new ReceiptStatusChanged($order));
+        } catch (\Exception $e) {
+            Log::error('Receipt rejected notification failed: ' . $e->getMessage());
+        }
 
         return response()->json(['message' => trans('order::orders.receipt_rejected')]);
     }

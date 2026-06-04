@@ -3,6 +3,7 @@
 namespace Modules\Account\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Modules\Order\Entities\Order;
 use Modules\Order\Mail\ReceiptUploaded;
@@ -37,7 +38,11 @@ class AccountReceiptController
 
         $adminEmail = setting('store_email');
         if ($adminEmail) {
-            Mail::to($adminEmail)->send(new ReceiptUploaded($order));
+            try {
+                Mail::to($adminEmail)->send(new ReceiptUploaded($order));
+            } catch (\Exception $e) {
+                Log::error('Receipt upload notification failed: ' . $e->getMessage());
+            }
         }
 
         return back()->with('success', trans('storefront::account.receipt.uploaded'));

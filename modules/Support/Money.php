@@ -235,6 +235,10 @@ class Money implements JsonSerializable
 
     public function convert($currency, $currencyRate = null)
     {
+        if ($this->currency === $currency) {
+            return new self($this->amount, $currency);
+        }
+
         $currencyRate = $currencyRate ?: CurrencyRate::for($currency);
 
         if (is_null($currencyRate)) {

@@ -412,7 +412,11 @@ class Cart extends DarryldecodeCart implements JsonSerializable
 
     public function subTotal()
     {
-        return Money::inDefaultCurrency($this->getSubTotal())->add($this->optionsPrice());
+        $itemsTotal = $this->items()->sum(function (CartItem $cartItem) {
+            return $cartItem->unitPrice()->convertToCurrentCurrency()->amount() * $cartItem->qty;
+        });
+
+        return Money::inCurrentCurrency($itemsTotal);
     }
 
 
@@ -448,15 +452,15 @@ class Cart extends DarryldecodeCart implements JsonSerializable
     public function total()
     {
         return $this->subTotal()
-            ->add($this->shippingMethod()->cost())
-            ->subtract($this->coupon()->value())
-            ->add($this->tax());
+            ->add($this->shippingMethod()->cost()->convertToCurrentCurrency())
+            ->subtract($this->coupon()->value()->convertToCurrentCurrency())
+            ->add($this->tax()->convertToCurrentCurrency());
     }
 
 
     public function tax()
     {
-        return Money::inDefaultCurrency($this->calculateTax());
+        return Money::inCurrentCurrency($this->calculateTax());
     }
 
 

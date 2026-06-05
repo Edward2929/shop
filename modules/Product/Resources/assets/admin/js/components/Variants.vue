@@ -1168,7 +1168,7 @@ function removeVariantDatePickerValue(index, key) {
 }
 
 function getVariantFixedPrice(variant, code, field) {
-    if (variant.prices && variant.prices[code]) {
+    if (variant.prices && !Array.isArray(variant.prices) && variant.prices[code]) {
         return variant.prices[code][field];
     }
 
@@ -1176,7 +1176,7 @@ function getVariantFixedPrice(variant, code, field) {
 }
 
 function setVariantFixedPrice(variant, code, field, value) {
-    if (!variant.prices) {
+    if (Array.isArray(variant.prices) || !variant.prices) {
         variant.prices = {};
     }
 

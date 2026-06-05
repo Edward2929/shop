@@ -63,11 +63,14 @@ class ProductEditResource extends JsonResource
     /**
      * Build the per-currency fixed prices keyed by currency code for the form.
      *
-     * @return array
+     * Always returns an object (even when empty) so the front-end form keeps
+     * `prices` as a keyed object rather than turning it into a JSON array.
+     *
+     * @return object
      */
-    private function fixedPricesForForm(): array
+    private function fixedPricesForForm(): object
     {
-        return $this->prices->mapWithKeys(function ($row) {
+        return (object) $this->prices->mapWithKeys(function ($row) {
             return [
                 $row->currency => [
                     'currency' => $row->currency,

@@ -365,7 +365,7 @@ const { flatPickrConfig } = useConfigs();
 const { removeDatePickerValue } = useProductMethods();
 
 function getFixedPrice(code, field) {
-    if (form.prices[code]) {
+    if (form.prices && form.prices[code]) {
         return form.prices[code][field];
     }
 
@@ -373,6 +373,10 @@ function getFixedPrice(code, field) {
 }
 
 function setFixedPrice(code, field, value) {
+    if (Array.isArray(form.prices) || !form.prices) {
+        form.prices = {};
+    }
+
     if (!form.prices[code]) {
         form.prices[code] = {
             currency: code,

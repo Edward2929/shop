@@ -452,15 +452,11 @@ class Cart extends DarryldecodeCart implements JsonSerializable
 
     public function total()
     {
-        $total = $this->subTotal()
+        // Tax is always already embedded in the subtotal (the price accessor ensures
+        // the displayed price is VAT-inclusive in both modes), so we never add it again.
+        return $this->subTotal()
             ->add($this->shippingMethod()->cost()->convertToCurrentCurrency())
             ->subtract($this->coupon()->value()->convertToCurrentCurrency());
-
-        if (!VatCalculator::pricesIncludeVat()) {
-            $total = $total->add($this->tax()->convertToCurrentCurrency());
-        }
-
-        return $total;
     }
 
 

@@ -63,13 +63,12 @@ class CartTax implements JsonSerializable
     private function calculate()
     {
         $base = $this->taxApplicableProductsTotalPrice();
+        $rate = (float) $this->taxRate->rate;
 
-        if (VatCalculator::pricesIncludeVat()) {
-            $rate = (float) $this->taxRate->rate;
-            return $base - ($base / (1 + $rate / 100));
-        }
-
-        return $this->taxCondition->getCalculatedValue($base);
+        // The subtotal is always VAT-inclusive (the price accessor adds VAT when
+        // prices_include_vat=false, or the DB price already contains it when true).
+        // Either way, we extract the VAT portion that is already inside the price.
+        return $base * $rate / (100 + $rate);
     }
 
 

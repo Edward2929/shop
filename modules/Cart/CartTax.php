@@ -55,7 +55,8 @@ class CartTax implements JsonSerializable
 
     public function amount(): Money
     {
-        return Money::inDefaultCurrency($this->calculate());
+        return Money::inDefaultCurrency($this->calculate())
+            ->withCurrentAmount($this->calculateInCurrentCurrency());
     }
 
 
@@ -65,10 +66,24 @@ class CartTax implements JsonSerializable
     }
 
 
+    private function calculateInCurrentCurrency()
+    {
+        return $this->taxCondition->getCalculatedValue($this->taxApplicableProductsCurrentTotalPrice());
+    }
+
+
     private function taxApplicableProductsTotalPrice()
     {
         return $this->taxApplicableProducts()->sum(function ($cartItem) {
             return $cartItem->totalPrice()->amount();
+        });
+    }
+
+
+    private function taxApplicableProductsCurrentTotalPrice()
+    {
+        return $this->taxApplicableProducts()->sum(function ($cartItem) {
+            return $cartItem->totalPrice()->valueInCurrentCurrency();
         });
     }
 

@@ -100,7 +100,16 @@ class CartCoupon implements JsonSerializable
 
     public function value()
     {
-        return Money::inDefaultCurrency($this->calculate());
+        $value = Money::inDefaultCurrency($this->calculate());
+
+        // Percentage coupons scale with the (fixed-price aware) cart total, so
+        // resolve them in the current currency. Fixed-amount coupons are an
+        // absolute default-currency amount and stay rate-based.
+        if ($this->coupon->is_percent) {
+            return $value->withCurrentAmount($this->calculateInCurrentCurrency());
+        }
+
+        return $value;
     }
 
 
@@ -117,11 +126,27 @@ class CartCoupon implements JsonSerializable
     }
 
 
+    private function calculateInCurrentCurrency()
+    {
+        return $this->couponCondition
+            ->getCalculatedValue($this->couponApplicableProductsCurrentTotalPrice());
+    }
+
+
     private function couponApplicableProductsTotalPrice()
     {
         return $this->couponApplicableProducts()
             ->sum(function ($cartItem) {
                 return $cartItem->totalPrice()->amount();
+            });
+    }
+
+
+    private function couponApplicableProductsCurrentTotalPrice()
+    {
+        return $this->couponApplicableProducts()
+            ->sum(function ($cartItem) {
+                return $cartItem->totalPrice()->valueInCurrentCurrency();
             });
     }
 

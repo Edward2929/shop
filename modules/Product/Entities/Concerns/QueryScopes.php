@@ -62,6 +62,7 @@ trait QueryScopes
                 'products.selling_price',
                 'products.special_price_start',
                 'products.special_price_end',
+                'products.is_fixed_price',
             ]
         );
     }

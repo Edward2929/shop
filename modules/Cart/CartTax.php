@@ -4,6 +4,7 @@ namespace Modules\Cart;
 
 use JsonSerializable;
 use Modules\Support\Money;
+use Modules\Support\Services\VatCalculator;
 
 class CartTax implements JsonSerializable
 {
@@ -61,7 +62,14 @@ class CartTax implements JsonSerializable
 
     private function calculate()
     {
-        return $this->taxCondition->getCalculatedValue($this->taxApplicableProductsTotalPrice());
+        $base = $this->taxApplicableProductsTotalPrice();
+
+        if (VatCalculator::pricesIncludeVat()) {
+            $rate = (float) $this->taxRate->rate;
+            return $base - ($base / (1 + $rate / 100));
+        }
+
+        return $this->taxCondition->getCalculatedValue($base);
     }
 
 

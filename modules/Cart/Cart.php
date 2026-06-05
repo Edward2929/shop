@@ -12,6 +12,7 @@ use Modules\Product\Entities\ProductVariant;
 use Modules\Shipping\Facades\ShippingMethod;
 use Darryldecode\Cart\Cart as DarryldecodeCart;
 use Modules\Variation\Entities\VariationValue;
+use Modules\Support\Services\VatCalculator;
 use Modules\Product\Services\ChosenProductOptions;
 use Modules\Product\Services\ChosenProductVariations;
 use Darryldecode\Cart\Exceptions\InvalidItemException;
@@ -451,10 +452,15 @@ class Cart extends DarryldecodeCart implements JsonSerializable
 
     public function total()
     {
-        return $this->subTotal()
+        $total = $this->subTotal()
             ->add($this->shippingMethod()->cost()->convertToCurrentCurrency())
-            ->subtract($this->coupon()->value()->convertToCurrentCurrency())
-            ->add($this->tax()->convertToCurrentCurrency());
+            ->subtract($this->coupon()->value()->convertToCurrentCurrency());
+
+        if (!VatCalculator::pricesIncludeVat()) {
+            $total = $total->add($this->tax()->convertToCurrentCurrency());
+        }
+
+        return $total;
     }
 
 

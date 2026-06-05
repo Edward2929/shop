@@ -31,7 +31,7 @@ class ProductVariantResource extends JsonResource
             'special_price_type' => $this->special_price_type,
             'special_price' => $this->special_price?->convertToCurrentCurrency()->amount(),
             'is_fixed_price' => (bool) $this->is_fixed_price,
-            'prices' => $this->prices->mapWithKeys(function ($row) {
+            'prices' => (object) $this->prices->mapWithKeys(function ($row) {
                 return [
                     $row->currency => [
                         'currency' => $row->currency,

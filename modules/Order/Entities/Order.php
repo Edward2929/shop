@@ -263,7 +263,7 @@ class Order extends Model
 
     public function attachTax(CartTax $cartTax)
     {
-        $this->taxes()->attach($cartTax->id(), ['amount' => $cartTax->amount()->amount()]);
+        $this->taxes()->attach($cartTax->id(), ['amount' => $cartTax->amount()->defaultCurrencyAmountForOrder()]);
     }
 
 

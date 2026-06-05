@@ -458,7 +458,8 @@ class Cart extends DarryldecodeCart implements JsonSerializable
 
     public function tax()
     {
-        return Money::inDefaultCurrency($this->calculateTax());
+        return Money::inDefaultCurrency($this->calculateTax())
+            ->withCurrentAmount($this->calculateTaxInCurrentCurrency());
     }
 
 
@@ -531,6 +532,14 @@ class Cart extends DarryldecodeCart implements JsonSerializable
     {
         return $this->taxes()->sum(function ($cartTax) {
             return $cartTax->amount()->amount();
+        });
+    }
+
+
+    private function calculateTaxInCurrentCurrency()
+    {
+        return $this->taxes()->sum(function ($cartTax) {
+            return $cartTax->amount()->valueInCurrentCurrency();
         });
     }
 }

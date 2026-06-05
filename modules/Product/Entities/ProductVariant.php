@@ -18,7 +18,7 @@ class ProductVariant extends Model
      *
      * @var array
      */
-    protected $with = ['files'];
+    protected $with = ['files', 'prices'];
 
     /**
      * The attributes that are mass assignable.
@@ -129,21 +129,41 @@ class ProductVariant extends Model
 
     public function getPriceAttribute($price)
     {
-        return Money::inDefaultCurrency($price);
+        $money = Money::inDefaultCurrency($price);
+
+        if ($this->is_fixed_price && $this->fixedPriceRow(currency())) {
+            return $money->withCurrentAmount($this->priceIn(currency())->amount());
+        }
+
+        return $money;
     }
 
 
     public function getSpecialPriceAttribute($specialPrice)
     {
         if (!is_null($specialPrice)) {
-            return Money::inDefaultCurrency($specialPrice);
+            $money = Money::inDefaultCurrency($specialPrice);
+
+            if ($this->is_fixed_price
+                && ($row = $this->fixedPriceRow(currency()))
+                && $row->hasSpecialPriceAmount()) {
+                return $money->withCurrentAmount($this->specialPriceIn(currency())->amount());
+            }
+
+            return $money;
         }
     }
 
 
     public function getSellingPriceAttribute($sellingPrice)
     {
-        return Money::inDefaultCurrency($sellingPrice);
+        $money = Money::inDefaultCurrency($sellingPrice);
+
+        if ($this->is_fixed_price && $this->fixedPriceRow(currency())) {
+            return $money->withCurrentAmount($this->sellingPriceIn(currency())->amount());
+        }
+
+        return $money;
     }
 
 

@@ -32,7 +32,13 @@ trait ModelAccessors
 
     public function getPriceAttribute($price): Money
     {
-        return Money::inDefaultCurrency($price);
+        $money = Money::inDefaultCurrency($price);
+
+        if ($this->is_fixed_price && $this->fixedPriceRow(currency())) {
+            return $money->withCurrentAmount($this->priceIn(currency())->amount());
+        }
+
+        return $money;
     }
 
 
@@ -67,7 +73,15 @@ trait ModelAccessors
     public function getSpecialPriceAttribute($specialPrice)
     {
         if (!is_null($specialPrice)) {
-            return Money::inDefaultCurrency($specialPrice);
+            $money = Money::inDefaultCurrency($specialPrice);
+
+            if ($this->is_fixed_price
+                && ($row = $this->fixedPriceRow(currency()))
+                && $row->hasSpecialPriceAmount()) {
+                return $money->withCurrentAmount($this->specialPriceIn(currency())->amount());
+            }
+
+            return $money;
         }
     }
 
@@ -89,10 +103,16 @@ trait ModelAccessors
     public function getSellingPriceAttribute($sellingPrice): Money
     {
         if (FlashSale::contains($this)) {
-            $sellingPrice = FlashSale::pivot($this)->price->amount();
+            return Money::inDefaultCurrency(FlashSale::pivot($this)->price->amount());
         }
 
-        return Money::inDefaultCurrency($sellingPrice);
+        $money = Money::inDefaultCurrency($sellingPrice);
+
+        if ($this->is_fixed_price && $this->fixedPriceRow(currency())) {
+            return $money->withCurrentAmount($this->sellingPriceIn(currency())->amount());
+        }
+
+        return $money;
     }
 
 

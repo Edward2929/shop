@@ -13,11 +13,81 @@ class Money implements JsonSerializable
     private $amount;
     private $currency;
 
+    /**
+     * Optional pre-resolved value of this money in the active (current) currency.
+     *
+     * Used to carry fixed per-currency prices through the pricing pipeline
+     * without relying on the exchange rate. When this is set, conversions to
+     * the current currency return this value as-is instead of multiplying the
+     * default-currency amount by the exchange rate.
+     *
+     * @var int|float|null
+     */
+    private $currentAmount;
 
-    public function __construct($amount, $currency)
+
+    public function __construct($amount, $currency, $currentAmount = null)
     {
         $this->amount = $amount;
         $this->currency = $currency;
+        $this->currentAmount = $currentAmount;
+    }
+
+
+    /**
+     * Get a copy of this money carrying a fixed value for the current currency.
+     *
+     * @param int|float|null $currentAmount
+     *
+     * @return self
+     */
+    public function withCurrentAmount($currentAmount): self
+    {
+        return new self($this->amount, $this->currency, $currentAmount);
+    }
+
+
+    /**
+     * Get the value of this money in the active (current) currency.
+     *
+     * Honours a fixed per-currency price when present, otherwise falls back
+     * to the exchange-rate based conversion.
+     *
+     * @return int|float
+     */
+    public function valueInCurrentCurrency()
+    {
+        if (!is_null($this->currentAmount)) {
+            return $this->currentAmount;
+        }
+
+        if ($this->currency === currency()) {
+            return $this->amount;
+        }
+
+        return $this->amount * (CurrencyRate::for(currency()) ?? 1);
+    }
+
+
+    /**
+     * Get the default-currency amount to persist on an order.
+     *
+     * For rate-based money this is simply the default-currency amount. For
+     * money carrying a fixed current-currency value we store the default
+     * equivalent at the current rate so that `amount * currency_rate`
+     * reproduces the exact fixed price when the order is displayed.
+     *
+     * @return int|float
+     */
+    public function defaultCurrencyAmountForOrder()
+    {
+        if (is_null($this->currentAmount)) {
+            return $this->amount;
+        }
+
+        $rate = CurrencyRate::for(currency()) ?: 1;
+
+        return $this->currentAmount / $rate;
     }
 
 
@@ -53,9 +123,13 @@ class Money implements JsonSerializable
 
     public function add($addend)
     {
+        $currentAmount = (!is_null($this->currentAmount) || !is_null($addend->currentAmount))
+            ? $this->valueInCurrentCurrency() + $addend->valueInCurrentCurrency()
+            : null;
+
         $addend = $this->convertToSameCurrency($addend);
 
-        return $this->newInstance($this->amount + $addend->amount);
+        return new self($this->amount + $addend->amount, $this->currency, $currentAmount);
     }
 
 
@@ -85,15 +159,21 @@ class Money implements JsonSerializable
 
     public function subtract($subtrahend)
     {
+        $currentAmount = (!is_null($this->currentAmount) || !is_null($subtrahend->currentAmount))
+            ? $this->valueInCurrentCurrency() - $subtrahend->valueInCurrentCurrency()
+            : null;
+
         $subtrahend = $this->convertToSameCurrency($subtrahend);
 
-        return $this->newInstance($this->amount - $subtrahend->amount);
+        return new self($this->amount - $subtrahend->amount, $this->currency, $currentAmount);
     }
 
 
     public function multiply($multiplier)
     {
-        return $this->newInstance($this->amount * $multiplier);
+        $currentAmount = is_null($this->currentAmount) ? null : $this->currentAmount * $multiplier;
+
+        return new self($this->amount * $multiplier, $this->currency, $currentAmount);
     }
 
 
@@ -229,12 +309,20 @@ class Money implements JsonSerializable
 
     public function convertToCurrentCurrency($currencyRate = null)
     {
+        if (!is_null($this->currentAmount)) {
+            return new self($this->currentAmount, currency());
+        }
+
         return $this->convert(currency(), $currencyRate);
     }
 
 
     public function convert($currency, $currencyRate = null)
     {
+        if (!is_null($this->currentAmount) && $currency === currency()) {
+            return new self($this->currentAmount, $currency);
+        }
+
         $currencyRate = $currencyRate ?: CurrencyRate::for($currency);
 
         if (is_null($currencyRate)) {

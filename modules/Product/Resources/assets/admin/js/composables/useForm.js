@@ -30,6 +30,8 @@ function initialFormData() {
         special_price_type: "fixed",
         special_price_start: null,
         special_price_end: null,
+        is_fixed_price: false,
+        prices: {},
         sku: null,
         manage_stock: 0,
         qty: null,

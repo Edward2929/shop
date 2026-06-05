@@ -30,6 +30,17 @@ class ProductVariantResource extends JsonResource
             'price' => $this->price?->convertToCurrentCurrency()->amount(),
             'special_price_type' => $this->special_price_type,
             'special_price' => $this->special_price?->convertToCurrentCurrency()->amount(),
+            'is_fixed_price' => (bool) $this->is_fixed_price,
+            'prices' => $this->prices->mapWithKeys(function ($row) {
+                return [
+                    $row->currency => [
+                        'currency' => $row->currency,
+                        'price' => $row->price,
+                        'special_price' => $row->special_price,
+                        'special_price_type' => $row->special_price_type ?? 'fixed',
+                    ],
+                ];
+            })->all(),
             'is_active' => $this->is_active,
             'is_default' => $this->is_default,
         ];

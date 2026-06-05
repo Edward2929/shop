@@ -176,7 +176,7 @@ class CartItem implements JsonSerializable
      */
     public function unitPrice()
     {
-        return $this->item->selling_price->add($this->optionsPrice());
+        return $this->item->sellingPriceForCart()->add($this->optionsPrice());
     }
 
 

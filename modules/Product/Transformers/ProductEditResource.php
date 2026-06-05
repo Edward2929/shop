@@ -33,6 +33,8 @@ class ProductEditResource extends JsonResource
             'variants' => ProductVariantResource::collection($this->variants()->withoutGlobalScope('active')->orderBy('position')->get()),
             'media' => $this->filterFiles(['base_image', 'additional_images'])->get()->map->only('id', 'path'),
             'price' => $this->price?->convertToCurrentCurrency()->amount(),
+            'is_fixed_price' => (bool) $this->is_fixed_price,
+            'prices' => $this->fixedPricesForForm(),
             'tax_class_id' => $this->tax_class_id ?? '',
             'sku' => $this->sku,
             'manage_stock' => $this->manage_stock,
@@ -55,5 +57,25 @@ class ProductEditResource extends JsonResource
             'is_virtual' => $this->is_virtual,
             'is_active' => $this->is_active,
         ];
+    }
+
+
+    /**
+     * Build the per-currency fixed prices keyed by currency code for the form.
+     *
+     * @return array
+     */
+    private function fixedPricesForForm(): array
+    {
+        return $this->prices->mapWithKeys(function ($row) {
+            return [
+                $row->currency => [
+                    'currency' => $row->currency,
+                    'price' => $row->price,
+                    'special_price' => $row->special_price,
+                    'special_price_type' => $row->special_price_type ?? 'fixed',
+                ],
+            ];
+        })->all();
     }
 }

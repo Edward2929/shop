@@ -27,14 +27,14 @@ if (!function_exists('product_price_formatted')) {
             return "<span class='special-price'>{$flashSalePrice}</span> <span class='previous-price'>{$previousPrice}</span>";
         }
 
-        $price = $productOrProductVariant->price->convertToCurrentCurrency()->format();
-        $specialPrice = $productOrProductVariant->getSpecialPrice()->convertToCurrentCurrency()->format();
+        $price = $productOrProductVariant->priceIn(currency())->format();
+        $specialPrice = $productOrProductVariant->specialPriceIn(currency())->format();
 
         if (is_callable($callback)) {
             return $callback($price, $specialPrice);
         }
 
-        if (!$productOrProductVariant->hasSpecialPrice()) {
+        if (!$productOrProductVariant->hasSpecialPriceIn(currency())) {
             return $price;
         }
 

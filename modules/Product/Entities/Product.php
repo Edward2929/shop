@@ -49,7 +49,7 @@ class Product extends Model implements Sitemapable
      *
      * @var array
      */
-    protected $with = ['translations'];
+    protected $with = ['translations', 'prices'];
 
     /**
      * The attributes that are mass assignable.

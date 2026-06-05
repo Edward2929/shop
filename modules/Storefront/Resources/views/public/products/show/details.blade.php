@@ -78,7 +78,7 @@
                     </template>
 
                     <span class="previous-price" x-text="formatCurrency(regularPrice)">
-                        {!! $item->is_active ? $item->hasSpecialPrice() ? $item->special_price->format() : $item->price->format() : '' !!}
+                        {!! $item->is_active ? ($item->hasSpecialPriceIn(currency()) ? $item->specialPriceIn(currency())->format() : $item->priceIn(currency())->format()) : '' !!}
                     </span>
                 </div>
             </template>
@@ -89,7 +89,7 @@
                 </template>
 
                 <span class="previous-price" x-text="formatCurrency(regularPrice)">
-                    {{ $item->hasSpecialPrice() ? $item->special_price->format() : $item->price->format() }}
+                    {{ $item->hasSpecialPriceIn(currency()) ? $item->specialPriceIn(currency())->format() : $item->priceIn(currency())->format() }}
                 </span>
             </div>
         @endif

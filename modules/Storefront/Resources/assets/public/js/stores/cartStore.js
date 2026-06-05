@@ -48,9 +48,11 @@ Alpine.store("cart", {
     },
 
     get total() {
-        return (
-            this.subTotal - this.couponValue + this.taxTotal + this.shippingCost
-        );
+        // When prices already include VAT, the tax shown is the VAT portion
+        // already contained in the subtotal, so it must not be added again.
+        const tax = FleetCart.pricesIncludeVat ? 0 : this.taxTotal;
+
+        return this.subTotal - this.couponValue + tax + this.shippingCost;
     },
 
     get hasCoupon() {

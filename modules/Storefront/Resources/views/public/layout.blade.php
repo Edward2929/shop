@@ -54,6 +54,7 @@
                 loggedIn: {{ auth()->check() ? 'true' : 'false' }},
                 compareCount: {{ $compareCount }},
                 cartQuantity: {{ $cartQuantity }},
+                pricesIncludeVat: {{ setting('prices_include_vat') ? 'true' : 'false' }},
                 wishlistCount: {{ $wishlistCount }},
                 csrfToken: '{{ csrf_token() }}',
                 data: {},

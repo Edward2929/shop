@@ -60,8 +60,8 @@ class Cart extends DarryldecodeCart implements JsonSerializable
         $options = array_filter($options);
         $variations = [];
 
-        $product = Product::with('files', 'categories', 'taxClass')->findOrFail($productId);
-        $variant = ProductVariant::find($variantId);
+        $product = Product::with('files', 'categories', 'taxClass', 'prices')->findOrFail($productId);
+        $variant = ProductVariant::with('prices')->find($variantId);
         $item = $variant ?? $product;
 
         if ($variant) {
@@ -412,7 +412,9 @@ class Cart extends DarryldecodeCart implements JsonSerializable
 
     public function subTotal()
     {
-        return Money::inDefaultCurrency($this->getSubTotal())->add($this->optionsPrice());
+        return $this->items()->reduce(function ($carry, CartItem $cartItem) {
+            return $carry->add($cartItem->totalPrice());
+        }, Money::inDefaultCurrency(0));
     }
 
 

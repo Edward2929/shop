@@ -231,9 +231,9 @@ class Order extends Model
         $orderProduct = $this->products()->create([
             'product_id' => $cartItem->product->id,
             'product_variant_id' => $cartItem->variant?->id,
-            'unit_price' => $cartItem->unitPrice()->amount(),
+            'unit_price' => $cartItem->unitPrice()->defaultCurrencyAmountForOrder(),
             'qty' => $cartItem->qty,
-            'line_total' => $cartItem->totalPrice()->amount(),
+            'line_total' => $cartItem->totalPrice()->defaultCurrencyAmountForOrder(),
         ]);
 
         $orderProduct->storeVariations($cartItem->variations);

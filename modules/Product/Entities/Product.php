@@ -22,6 +22,7 @@ use Modules\Product\Entities\Concerns\QueryScopes;
 use Modules\Product\Entities\Concerns\ModelMutators;
 use Modules\Product\Entities\Concerns\ModelAccessors;
 use Modules\Product\Entities\Concerns\HasSpecialPrice;
+use Modules\Product\Entities\Concerns\HasCurrencyPrices;
 use Modules\Product\Entities\Concerns\EloquentRelations;
 
 class Product extends Model implements Sitemapable
@@ -33,6 +34,7 @@ class Product extends Model implements Sitemapable
         HasMedia,
         HasMetaData,
         HasSpecialPrice,
+        HasCurrencyPrices,
         HasStock,
         SoftDeletes,
         IsNew,
@@ -65,6 +67,7 @@ class Product extends Model implements Sitemapable
         'special_price_start',
         'special_price_end',
         'selling_price',
+        'is_fixed_price',
         'manage_stock',
         'qty',
         'in_stock',
@@ -82,6 +85,7 @@ class Product extends Model implements Sitemapable
     protected $casts = [
         'is_virtual' => 'boolean',
         'is_active' => 'boolean',
+        'is_fixed_price' => 'boolean',
         'special_price_start' => 'datetime',
         'special_price_end' => 'datetime',
         'new_from' => 'datetime',
@@ -151,6 +155,10 @@ class Product extends Model implements Sitemapable
                 $product->upSellProducts()->sync(array_get($attributes, 'up_sells', []));
                 $product->crossSellProducts()->sync(array_get($attributes, 'cross_sells', []));
                 $product->relatedProducts()->sync(array_get($attributes, 'related_products', []));
+
+                if (array_key_exists('prices', $attributes) || array_key_exists('is_fixed_price', $attributes)) {
+                    $product->syncCurrencyPrices(array_get($attributes, 'prices', []));
+                }
             }
 
             $product->withoutEvents(function () use ($product) {

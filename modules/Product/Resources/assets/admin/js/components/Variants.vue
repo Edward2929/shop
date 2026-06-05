@@ -701,6 +701,199 @@
                                                     </div>
                                                 </div>
 
+                                                <div
+                                                    class="row"
+                                                    v-if="
+                                                        fixedPriceCurrencies.length
+                                                    "
+                                                >
+                                                    <div class="col-sm-12">
+                                                        <div
+                                                            class="form-group row"
+                                                        >
+                                                            <label>
+                                                                <input
+                                                                    type="checkbox"
+                                                                    v-model="
+                                                                        variant.is_fixed_price
+                                                                    "
+                                                                />
+                                                                {{
+                                                                    trans(
+                                                                        "product::products.fixed_price.enable",
+                                                                    )
+                                                                }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <template
+                                                        v-if="
+                                                            variant.is_fixed_price
+                                                        "
+                                                    >
+                                                        <div
+                                                            class="col-sm-6"
+                                                            v-for="currency in fixedPriceCurrencies"
+                                                            :key="currency.code"
+                                                        >
+                                                            <div
+                                                                class="form-group row"
+                                                            >
+                                                                <label>
+                                                                    {{
+                                                                        trans(
+                                                                            "product::attributes.price",
+                                                                        )
+                                                                    }}
+                                                                    ({{
+                                                                        currency.code
+                                                                    }})
+                                                                </label>
+
+                                                                <div
+                                                                    class="input-group"
+                                                                >
+                                                                    <span
+                                                                        class="input-group-addon"
+                                                                    >
+                                                                        {{
+                                                                            currency.symbol
+                                                                        }}
+                                                                    </span>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        step="0.1"
+                                                                        class="form-control"
+                                                                        @wheel="
+                                                                            $event.target.blur()
+                                                                        "
+                                                                        :value="
+                                                                            getVariantFixedPrice(
+                                                                                variant,
+                                                                                currency.code,
+                                                                                'price',
+                                                                            )
+                                                                        "
+                                                                        @input="
+                                                                            setVariantFixedPrice(
+                                                                                variant,
+                                                                                currency.code,
+                                                                                'price',
+                                                                                $event
+                                                                                    .target
+                                                                                    .value,
+                                                                            )
+                                                                        "
+                                                                    />
+                                                                </div>
+
+                                                                <div
+                                                                    class="input-group"
+                                                                    style="
+                                                                        margin-top: 8px;
+                                                                    "
+                                                                >
+                                                                    <span
+                                                                        class="input-group-addon"
+                                                                    >
+                                                                        {{
+                                                                            getVariantFixedPrice(
+                                                                                variant,
+                                                                                currency.code,
+                                                                                "special_price_type",
+                                                                            ) ===
+                                                                            "percent"
+                                                                                ? "%"
+                                                                                : currency.symbol
+                                                                        }}
+                                                                    </span>
+
+                                                                    <input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        step="0.1"
+                                                                        class="form-control"
+                                                                        :placeholder="
+                                                                            trans(
+                                                                                'product::attributes.special_price',
+                                                                            )
+                                                                        "
+                                                                        @wheel="
+                                                                            $event.target.blur()
+                                                                        "
+                                                                        :value="
+                                                                            getVariantFixedPrice(
+                                                                                variant,
+                                                                                currency.code,
+                                                                                'special_price',
+                                                                            )
+                                                                        "
+                                                                        @input="
+                                                                            setVariantFixedPrice(
+                                                                                variant,
+                                                                                currency.code,
+                                                                                'special_price',
+                                                                                $event
+                                                                                    .target
+                                                                                    .value,
+                                                                            )
+                                                                        "
+                                                                    />
+
+                                                                    <span
+                                                                        class="input-group-btn"
+                                                                    >
+                                                                        <select
+                                                                            class="form-control custom-select-black"
+                                                                            :value="
+                                                                                getVariantFixedPrice(
+                                                                                    variant,
+                                                                                    currency.code,
+                                                                                    'special_price_type',
+                                                                                ) ||
+                                                                                'fixed'
+                                                                            "
+                                                                            @change="
+                                                                                setVariantFixedPrice(
+                                                                                    variant,
+                                                                                    currency.code,
+                                                                                    'special_price_type',
+                                                                                    $event
+                                                                                        .target
+                                                                                        .value,
+                                                                                )
+                                                                            "
+                                                                        >
+                                                                            <option
+                                                                                value="fixed"
+                                                                            >
+                                                                                {{
+                                                                                    trans(
+                                                                                        "product::products.form.special_price_types.fixed",
+                                                                                    )
+                                                                                }}
+                                                                            </option>
+
+                                                                            <option
+                                                                                value="percent"
+                                                                            >
+                                                                                {{
+                                                                                    trans(
+                                                                                        "product::products.form.special_price_types.percent",
+                                                                                    )
+                                                                                }}
+                                                                            </option>
+                                                                        </select>
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </template>
+                                                </div>
+
                                                 <div class="row">
                                                     <div class="col-sm-6">
                                                         <div
@@ -972,6 +1165,32 @@ function removeVariantMedia(variantIndex, mediaIndex) {
 
 function removeVariantDatePickerValue(index, key) {
     form.variants[index][key] = null;
+}
+
+function getVariantFixedPrice(variant, code, field) {
+    if (variant.prices && variant.prices[code]) {
+        return variant.prices[code][field];
+    }
+
+    return field === "special_price_type" ? "fixed" : null;
+}
+
+function setVariantFixedPrice(variant, code, field, value) {
+    if (!variant.prices) {
+        variant.prices = {};
+    }
+
+    if (!variant.prices[code]) {
+        variant.prices[code] = {
+            currency: code,
+            price: null,
+            special_price: null,
+            special_price_type: "fixed",
+        };
+    }
+
+    variant.prices[code][field] =
+        field !== "special_price_type" && value === "" ? null : value;
 }
 
 onMounted(() => {

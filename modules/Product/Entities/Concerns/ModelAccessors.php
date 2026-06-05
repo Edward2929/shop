@@ -45,12 +45,16 @@ trait ModelAccessors
     public function getFormattedPriceRangeAttribute(): ?string
     {
         if ($this->variants->count()) {
-            $minPrice = $this->variants->min('price');
-            $maxPrice = $this->variants->max('price');
+            $prices = $this->variants->map(function ($variant) {
+                return $variant->priceIn(currency())->amount();
+            });
+
+            $minPrice = $prices->min();
+            $maxPrice = $prices->max();
 
             if ($minPrice !== $maxPrice) {
-                $formattedMinPriceInCurrentCurrency = Money::inDefaultCurrency($minPrice->amount())->convertToCurrentCurrency()->format();
-                $formattedMaxPriceInCurrentCurrency = Money::inDefaultCurrency($maxPrice->amount())->convertToCurrentCurrency()->format();
+                $formattedMinPriceInCurrentCurrency = (new Money($minPrice, currency()))->format();
+                $formattedMaxPriceInCurrentCurrency = (new Money($maxPrice, currency()))->format();
 
                 return "$formattedMinPriceInCurrentCurrency - $formattedMaxPriceInCurrentCurrency";
             }

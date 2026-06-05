@@ -29,7 +29,7 @@ class ProductPriceController
             ->format();
 
         return product_price_formatted($product, function ($price) use ($product, $variantPrice) {
-            if (!$product->hasSpecialPrice()) {
+            if (!$product->hasSpecialPriceIn(currency())) {
                 return $variantPrice;
             }
 

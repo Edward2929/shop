@@ -143,6 +143,8 @@
         FleetCart.langs['product::attributes.special_price_type'] = '{{ trans('product::attributes.special_price_type') }}';
         FleetCart.langs['product::products.form.special_price_types.fixed'] = '{{ trans('product::products.form.special_price_types.fixed') }}';
         FleetCart.langs['product::products.form.special_price_types.percent'] = '{{ trans('product::products.form.special_price_types.percent') }}';
+        FleetCart.langs['product::products.fixed_price.enable'] = '{{ trans('product::products.fixed_price.enable') }}';
+        FleetCart.langs['product::products.fixed_price.help'] = '{{ trans('product::products.fixed_price.help') }}';
         FleetCart.langs['product::attributes.special_price_start'] = '{{ trans('product::attributes.special_price_start') }}';
         FleetCart.langs['product::attributes.special_price_end'] = '{{ trans('product::attributes.special_price_end') }}';
         FleetCart.langs['product::products.group.inventory'] = '{{ trans('product::products.group.inventory') }}';

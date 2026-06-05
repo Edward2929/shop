@@ -10,7 +10,12 @@
         data: {},
         errors: {},
         selectize: [],
-        defaultCurrencySymbol: '{{ currency_symbol(setting("default_currency")) }}'
+        defaultCurrencySymbol: '{{ currency_symbol(setting("default_currency")) }}',
+        defaultCurrency: '{{ setting("default_currency") }}',
+        fixedPriceCurrencies: @json(collect(setting('supported_currencies'))
+            ->reject(fn ($code) => $code === setting('default_currency'))
+            ->map(fn ($code) => ['code' => $code, 'symbol' => currency_symbol($code)])
+            ->values())
     };
 
     FleetCart.langs['admin::admin.buttons.delete'] = '{{ trans('admin::admin.buttons.delete') }}';

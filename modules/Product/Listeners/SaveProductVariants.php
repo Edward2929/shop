@@ -48,7 +48,12 @@ class SaveProductVariants
 
         foreach ($variants as $attributes) {
             $attributes['position'] = ++$counter;
-            $product->variants()->withoutGlobalScope('active')->updateOrCreate(['id' => $attributes['id'] ?? null], $attributes);
+
+            $variant = $product->variants()
+                ->withoutGlobalScope('active')
+                ->updateOrCreate(['id' => $attributes['id'] ?? null], $attributes);
+
+            $variant->syncCurrencyPrices($attributes['prices'] ?? []);
         }
     }
 }

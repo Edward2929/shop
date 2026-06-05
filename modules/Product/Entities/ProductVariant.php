@@ -7,10 +7,11 @@ use Modules\Media\Entities\File;
 use Modules\Support\Eloquent\Model;
 use Modules\Media\Eloquent\HasMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Product\Entities\Concerns\HasCurrencyPrices;
 
 class ProductVariant extends Model
 {
-    use SoftDeletes, HasMedia;
+    use SoftDeletes, HasMedia, HasCurrencyPrices;
 
     /**
      * The relations to eager load on every query.
@@ -36,6 +37,7 @@ class ProductVariant extends Model
         'special_price_start',
         'special_price_end',
         'selling_price',
+        'is_fixed_price',
         'manage_stock',
         'qty',
         'in_stock',
@@ -51,6 +53,7 @@ class ProductVariant extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_default' => 'boolean',
+        'is_fixed_price' => 'boolean',
         'special_price_start' => 'datetime',
         'special_price_end' => 'datetime',
         'deleted_at' => 'datetime',

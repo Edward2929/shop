@@ -9,5 +9,7 @@ app.config.globalProperties.trans = trans;
 app.config.globalProperties.hasAccess = hasAccess;
 app.config.globalProperties.defaultCurrencySymbol =
     FleetCart.defaultCurrencySymbol;
+app.config.globalProperties.fixedPriceCurrencies =
+    FleetCart.fixedPriceCurrencies ?? [];
 
 app.mount("#app");

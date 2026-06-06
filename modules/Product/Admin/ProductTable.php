@@ -57,10 +57,10 @@ class ProductTable extends AdminTable
                     if ($price->hasSpecialPriceAmount()) {
                         $special = $price->specialPrice()->format($price->currency);
 
-                        return "<div><strong>{$price->currency}:</strong> {$special} <del class='text-red'>{$formatted}</del></div>";
+                        return "<div>{$special} <del class='text-red'>{$formatted}</del></div>";
                     }
 
-                    return "<div><strong>{$price->currency}:</strong> {$formatted}</div>";
+                    return "<div>{$formatted}</div>";
                 })->implode('');
 
                 return $prices !== ''

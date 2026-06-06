@@ -44,6 +44,7 @@
                 { data: 'thumbnail', orderable: false, searchable: false, width: '10%' },
                 { data: 'name', name: 'translations.name', class: 'name', orderable: false, defaultContent: '' },
                 { data: 'price', searchable: false },
+                { data: 'fixed_price', orderable: false, searchable: false },
                 { data: 'in_stock', name: 'in_stock', searchable: false },
                 { data: 'status', name: 'is_active', searchable: false },
                 { data: 'updated', name: 'updated_at' },

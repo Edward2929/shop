@@ -30,7 +30,7 @@ class OrderTable extends AdminTable
                 return $order->customer_full_name;
             })
             ->editColumn('total', function ($order) {
-                return $order->total->format();
+                return $order->total->convert($order->currency, $order->currency_rate)->format($order->currency);
             })
             ->editColumn('status', function ($order) {
                 return '<span class="badge ' . order_status_badge_class($order->status) . '">' . $order->status() . '</span>';

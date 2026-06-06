@@ -11,7 +11,7 @@ class OrderCollection extends Collection
     public function sumTotal()
     {
         $total = $this->sum(function (Order $order) {
-            return $order->total->amount();
+            return $order->total->convert($order->currency, $order->currency_rate)->amount();
         });
 
         return Money::inDefaultCurrency($total);

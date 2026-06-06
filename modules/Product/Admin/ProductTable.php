@@ -44,11 +44,28 @@ class ProductTable extends AdminTable
             ->editColumn('fixed_price', function (Product $product) {
                 $item = $product->variant ?? $product;
 
-                if ($item->is_fixed_price) {
-                    return "<span class='badge badge-warning'>" . trans('product::products.fixed_price.notice') . "</span>";
+                if (! $item->is_fixed_price) {
+                    return '';
                 }
 
-                return '';
+                $badge = "<span class='badge badge-warning' title='" . trans('product::products.fixed_price.notice') . "'>"
+                    . trans('product::products.fixed_price.badge') . "</span>";
+
+                $prices = $item->prices->map(function ($price) {
+                    $formatted = $price->price()->format($price->currency);
+
+                    if ($price->hasSpecialPriceAmount()) {
+                        $special = $price->specialPrice()->format($price->currency);
+
+                        return "<div><strong>{$price->currency}:</strong> {$special} <del class='text-red'>{$formatted}</del></div>";
+                    }
+
+                    return "<div><strong>{$price->currency}:</strong> {$formatted}</div>";
+                })->implode('');
+
+                return $prices !== ''
+                    ? "{$badge}<div class='m-t-5'>{$prices}</div>"
+                    : $badge;
             })
             ->editColumn('in_stock', function (Product $product) {
                 $item = $product->variant ?? $product;

@@ -23,6 +23,7 @@ return [
     'fixed_price' => [
         'enable' => 'Set fixed prices per currency',
         'help' => 'When enabled, the prices entered below are used as-is for each currency and are not affected by exchange rate changes.',
+        'badge' => 'Fixed price',
     ],
 
     'group' => [

@@ -13,7 +13,7 @@ class ProductTable extends AdminTable
      *
      * @var array
      */
-    protected array $rawColumns = ['price', 'in_stock'];
+    protected array $rawColumns = ['price', 'fixed_price', 'in_stock'];
 
 
     /**
@@ -32,7 +32,7 @@ class ProductTable extends AdminTable
             ->editColumn('price', function (Product $product) {
                 $item = $product->variant ?? $product;
 
-                $price = product_price_formatted($item, function ($price, $specialPrice) use ($item) {
+                return product_price_formatted($item, function ($price, $specialPrice) use ($item) {
                     if ($item->hasSpecialPrice()) {
                         return "<span class='m-r-5'>{$specialPrice}</span>
                             <del class='text-red'>{$price}</del>";
@@ -40,12 +40,15 @@ class ProductTable extends AdminTable
 
                     return "<span class='m-r-5'>{$price}</span>";
                 });
+            })
+            ->editColumn('fixed_price', function (Product $product) {
+                $item = $product->variant ?? $product;
 
                 if ($item->is_fixed_price) {
-                    $price .= "<br><span class='badge badge-info'>" . trans('product::products.fixed_price.badge') . "</span>";
+                    return "<span class='badge badge-warning'>" . trans('product::products.fixed_price.notice') . "</span>";
                 }
 
-                return $price;
+                return '';
             })
             ->editColumn('in_stock', function (Product $product) {
                 $item = $product->variant ?? $product;

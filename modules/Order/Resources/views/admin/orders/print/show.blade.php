@@ -178,7 +178,7 @@
                                             <td>
                                                 <label
                                                     class="visible-xs">{{ trans('order::print.unit_price') }}:</label>
-                                                <span>{{ $product->unit_price->convert($order->currency, $order->currency_rate)->convert($order->currency, $order->currency_rate)->format($order->currency) }}</span>
+                                                <span>{{ $product->unit_price->convert($order->currency, $order->currency_rate)->format($order->currency) }}</span>
                                             </td>
 
                                             <td>

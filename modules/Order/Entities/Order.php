@@ -293,7 +293,7 @@ class Order extends Model
      */
     public function table()
     {
-        $query = $this->newQuery()->select(['id', 'customer_first_name', 'customer_last_name', 'customer_email', 'currency', 'total', 'status', 'created_at']);
+        $query = $this->newQuery()->select(['id', 'customer_first_name', 'customer_last_name', 'customer_email', 'currency', 'currency_rate', 'total', 'status', 'created_at']);
 
         return new OrderTable($query);
     }

@@ -23,14 +23,14 @@ class SalesReport extends Report
                 $join->on('orders.id', '=', 'op.order_id');
             })
             ->selectRaw('SUM(op.qty) as total_products')
-            ->selectRaw('SUM(sub_total) as sub_total')
-            ->selectRaw('SUM(shipping_cost) as shipping_cost')
-            ->selectRaw('SUM(discount) as discount')
+            ->selectRaw('SUM(orders.sub_total * orders.currency_rate) as sub_total')
+            ->selectRaw('SUM(orders.shipping_cost * orders.currency_rate) as shipping_cost')
+            ->selectRaw('SUM(orders.discount * orders.currency_rate) as discount')
             ->leftJoin(DB::raw('(SELECT order_id, sum(amount) amount FROM order_taxes GROUP BY order_id) ot'), function ($join) {
                 $join->on('orders.id', '=', 'ot.order_id');
             })
-            ->selectRaw('SUM(ot.amount) as tax')
-            ->selectRaw('SUM(orders.total) as total')
+            ->selectRaw('SUM(ot.amount * orders.currency_rate) as tax')
+            ->selectRaw('SUM(orders.total * orders.currency_rate) as total')
             ->groupBy('orders.id');
     }
 }

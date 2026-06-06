@@ -20,7 +20,7 @@ class CustomersOrderReport extends Report
             ->selectRaw('COUNT(*) as total_orders')
             ->join('order_products', 'orders.id', '=', 'order_products.order_id')
             ->selectRaw('SUM(order_products.qty) as total_products')
-            ->selectRaw('SUM(orders.total) as total')
+            ->selectRaw('SUM(orders.total * orders.currency_rate) as total')
             ->when(request()->has('customer_name'), function ($query) {
                 $query->where('customer_first_name', 'like', request('customer_name') . '%')
                     ->orWhere('customer_last_name', 'like', request('customer_name') . '%');

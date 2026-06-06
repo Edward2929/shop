@@ -13,7 +13,7 @@ class ShippingReport extends Report
             ->selectRaw('MIN(created_at) as start_date')
             ->selectRaw('MAX(created_at) as end_date')
             ->selectRaw('COUNT(*) as total_orders')
-            ->selectRaw('SUM(shipping_cost) as total')
+            ->selectRaw('SUM(orders.shipping_cost * orders.currency_rate) as total')
             ->when(request()->has('shipping_method'), function ($query) {
                 $query->where('shipping_method', request('shipping_method'));
             })

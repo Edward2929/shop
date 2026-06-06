@@ -23,8 +23,8 @@ return [
     'fixed_price' => [
         'enable' => 'Set fixed prices per currency',
         'help' => 'When enabled, the prices entered below are used as-is for each currency and are not affected by exchange rate changes.',
-        'badge' => 'Sabit Fiyat',
-        'column' => 'Sabit Fiyat',
+        'badge' => 'Fixed price',
+        'column' => 'Fixed price',
         'notice' => 'Bu üründe sabit fiyat kullanılıyor, lütfen kontrol ediniz.',
     ],
 

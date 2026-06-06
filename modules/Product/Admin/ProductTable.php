@@ -30,14 +30,22 @@ class ProductTable extends AdminTable
                 ]);
             })
             ->editColumn('price', function (Product $product) {
-                return product_price_formatted($product->variant ?? $product, function ($price, $specialPrice) use ($product) {
-                    if ($product->variant ? $product->variant->hasSpecialPrice() : $product->hasSpecialPrice()) {
+                $item = $product->variant ?? $product;
+
+                $price = product_price_formatted($item, function ($price, $specialPrice) use ($item) {
+                    if ($item->hasSpecialPrice()) {
                         return "<span class='m-r-5'>{$specialPrice}</span>
                             <del class='text-red'>{$price}</del>";
                     }
 
                     return "<span class='m-r-5'>{$price}</span>";
                 });
+
+                if ($item->is_fixed_price) {
+                    $price .= "<br><span class='badge badge-info'>" . trans('product::products.fixed_price.badge') . "</span>";
+                }
+
+                return $price;
             })
             ->editColumn('in_stock', function (Product $product) {
                 $item = $product->variant ?? $product;

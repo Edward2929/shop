@@ -6,6 +6,7 @@ use Modules\Cart\CartTax;
 use Modules\Cart\CartItem;
 use Modules\Support\Money;
 use Modules\Support\State;
+use Illuminate\Support\Facades\DB;
 use Modules\Support\Country;
 use Modules\Media\Entities\File;
 use Modules\Tax\Entities\TaxRate;
@@ -54,7 +55,9 @@ class Order extends Model
 
     public static function totalSales()
     {
-        return Money::inDefaultCurrency(self::withoutCanceledOrders()->sum('total'));
+        return Money::inDefaultCurrency(
+            self::withoutCanceledOrders()->sum(DB::raw('total * currency_rate'))
+        );
     }
 
 
@@ -309,7 +312,7 @@ class Order extends Model
 
     private function ordersByWeekDay()
     {
-        return self::select('total', 'created_at')
+        return self::select('total', 'currency', 'currency_rate', 'created_at')
             ->withoutCanceledOrders()
             ->whereBetween('created_at', [now()->subDays(6), now()->addDay()])
             ->get()
